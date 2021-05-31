@@ -47,9 +47,9 @@ const SignIn = () => {
 
   return (
     <AuthWrapper>
-      <p className="auth-notice">
+      {/* <p className="auth-notice">
         Don&rsquo;t have an account? <NavLink to="/register">Sign up now</NavLink>
-      </p>
+      </p> */}
       <div className="auth-contents">
         <Form name="login" form={form} onFinish={handleSubmit} layout="vertical">
           <Heading as="h3">
@@ -77,32 +77,6 @@ const SignIn = () => {
               {isLoading ? 'Loading...' : 'Sign In'}
             </Button>
           </Form.Item>
-          <p className="form-divider">
-            <span>Or</span>
-          </p>
-          <ul className="social-login">
-            <li>
-              <Link className="google-signup" to="#">
-                <img src={require('../../../../static/img/google.png')} alt="" />
-                <span>Sign in with Google</span>
-              </Link>
-            </li>
-            <li>
-              <Link className="facebook-sign" to="#">
-                <FacebookOutlined />
-              </Link>
-            </li>
-            <li>
-              <Link className="twitter-sign" to="#">
-                <TwitterOutlined />
-              </Link>
-            </li>
-          </ul>
-          <div className="auth0-login">
-            <Link to="#" onClick={() => lock.show()}>
-              Sign In with Auth0
-            </Link>
-          </div>
         </Form>
       </div>
     </AuthWrapper>

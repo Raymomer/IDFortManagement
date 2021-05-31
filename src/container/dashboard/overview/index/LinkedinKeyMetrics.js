@@ -14,7 +14,7 @@ const LinkedinKeyMetrics = () => {
   const dispatch = useDispatch();
   const { linkdinOverviewState, liIsLoading } = useSelector(state => {
     return {
-      linkdinOverviewState: state.chartContent.linkdinOverview,
+      linkdinOverviewState: state.chartContent.linkdinOverviewData,
       liIsLoading: state.chartContent.liLoading,
     };
   });

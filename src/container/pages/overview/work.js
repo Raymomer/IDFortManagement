@@ -24,7 +24,7 @@ const Work = () => {
           <BasicFormWrapper>
             <Form style={{ width: '100%' }} form={form} name="info" onFinish={handleSubmit}>
               <Heading className="form-title" as="h4">
-                Work Information
+                Upload Multiple Documents
               </Heading>
               <Form.Item name="image" label="Upload Document Image">
                 <figure className="photo-upload align-center-v"
@@ -63,7 +63,7 @@ const Work = () => {
                     Reset
                   </Button>
                   <Button htmlType="submit" type="primary">
-                    <Link to="work">Scne & Result</Link>
+                    <Link to="work">Scan & Result</Link>
                   </Button>
                 </div>
               </Form.Item>

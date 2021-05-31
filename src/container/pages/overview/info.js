@@ -7,6 +7,7 @@ import { Button } from '../../../components/buttons/buttons';
 import Heading from '../../../components/heading/heading';
 import { ShowResponse, TestimonialStyleWrapper } from '../style';
 import { Modal } from '../../../components/modals/antd-modals';
+import { Cards } from '../../../components/cards/frame/cards-frame';
 
 import SwiperCore, { Navigation, Pagination } from 'swiper';
 import Swiper from 'react-id-swiper';
@@ -70,6 +71,34 @@ const Info = () => {
     onCancel();
   };
 
+  const beforeUpload = file => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+      message.error('You can only upload JPG/PNG file!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('Image must smaller than 2MB!');
+    }
+    return isJpgOrPng && isLt2M;
+  };
+
+  const onHandleChange = info => {
+      if (info.file.status === 'uploading') {
+        setState({ ...state, loading: true });
+        return;
+      }
+      if (info.file.status === 'done') {
+        // Get this url from response in real world.
+        getBase64(info.file.originFileObj, imageUrl =>
+          setState({
+            imageUrl,
+            loading: false,
+          }),
+        );
+      }
+    };
+
   return (
     <Row justify="center">
       <Col xl={10} md={16} xs={24}>
@@ -77,7 +106,7 @@ const Info = () => {
           <BasicFormWrapper>
             <Form style={{ width: '100%', position: "inherit", }} form={form} name="info" onFinish={handleSubmit}>
               <Heading className="form-title" as="h4">
-                Personal Information
+                Upload Single Document
               </Heading>
               <Form.Item name="image" label="Upload Document Image">
                 <figure className="photo-upload align-center-v"
@@ -96,18 +125,19 @@ const Info = () => {
               </Form.Item>
 
               <Form.Item name="image" label="Upload Document Image Back">
-                <figure className="photo-upload align-center-v"
-                  style={{
-                    position: "inherit",
-                  }}>
-                  <figcaption>
-                    <Upload>
-                      <Link className="btn-upload" to="#">
-                        <FeatherIcon icon="camera" size={16} />
-                      </Link>
-                    </Upload>
-                  </figcaption>
-                </figure>
+                {/* <Cards title="Avatar">
+                  <Upload
+                    name="avatar"
+                    listType="picture-card"
+                    className="avatar-uploader"
+                    showUploadList={false}
+                    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                    beforeUpload={beforeUpload}
+                    onChange={onHandleChange}
+                  >
+                    {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+                  </Upload>
+                </Cards> */}
               </Form.Item>
               <Form.Item name="image" label="Upload Document Image Back">
                 <figure className="photo-upload align-center-v"
@@ -163,7 +193,7 @@ const Info = () => {
                     Reset
                   </Button>
                   <Button onClick={showModal} htmlType="submit" type="primary">
-                    <Link to="#">Scne & Result</Link>
+                    <Link to="#">Scan & Result</Link>
                   </Button>
                 </div>
               </Form.Item>

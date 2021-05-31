@@ -27,19 +27,13 @@ const AddNew = ({ match }) => {
                       <li>
                         <NavLink to={`${match.path}/info`}>
                           <FeatherIcon icon="user" size={14} />
-                          Personal Info
+                          Single
                         </NavLink>
                       </li>
                       <li>
                         <NavLink to={`${match.path}/work`}>
                           <FeatherIcon icon="briefcase" size={14} />
-                          Work Info
-                        </NavLink>
-                      </li>
-                      <li>
-                        <NavLink to={`${match.path}/social`}>
-                          <FeatherIcon icon="share-2" size={14} />
-                          Social
+                          Multiple
                         </NavLink>
                       </li>
                     </ul>
@@ -56,7 +50,6 @@ const AddNew = ({ match }) => {
                   >
                     <Route exact path={`${match.path}/info`} component={Info} />
                     <Route path={`${match.path}/work`} component={Work} />
-                    <Route path={`${match.path}/social`} component={Social} />
                   </Suspense>
                 </Switch>
               </Cards>

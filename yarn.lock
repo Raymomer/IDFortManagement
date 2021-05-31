@@ -3464,27 +3464,7 @@
     "caniuse-lite" "^1.0.30000844"
     "electron-to-chromium" "^1.3.47"
 
-"browserslist@^4.0.0":
-  "integrity" "sha512-Z+vsCZIvCBvqLoYkBFTwEYH3v5MCQbsAjp50ERycpOjnPmolg1Gjy4+KaWWpm8QOJt9GHkhdqAl14NpCX73CWA=="
-  "resolved" "https://registry.npmjs.org/browserslist/-/browserslist-4.14.5.tgz"
-  "version" "4.14.5"
-  dependencies:
-    "caniuse-lite" "^1.0.30001135"
-    "electron-to-chromium" "^1.3.571"
-    "escalade" "^3.1.0"
-    "node-releases" "^1.1.61"
-
-"browserslist@^4.12.0":
-  "integrity" "sha512-Z+vsCZIvCBvqLoYkBFTwEYH3v5MCQbsAjp50ERycpOjnPmolg1Gjy4+KaWWpm8QOJt9GHkhdqAl14NpCX73CWA=="
-  "resolved" "https://registry.npmjs.org/browserslist/-/browserslist-4.14.5.tgz"
-  "version" "4.14.5"
-  dependencies:
-    "caniuse-lite" "^1.0.30001135"
-    "electron-to-chromium" "^1.3.571"
-    "escalade" "^3.1.0"
-    "node-releases" "^1.1.61"
-
-"browserslist@^4.16.3":
+"browserslist@^4.0.0", "browserslist@^4.12.0", "browserslist@^4.16.3", "browserslist@^4.6.2", "browserslist@^4.6.4", "browserslist@^4.8.5", "browserslist@^4.9.1":
   "integrity" "sha512-vIyhWmIkULaq04Gt93txdh+j02yX/JzlyhLYbV3YQCn/zvES3JnY7TifHHvvr1w5hTDluNKMkV05cs4vy8Q7sw=="
   "resolved" "https://registry.npmjs.org/browserslist/-/browserslist-4.16.3.tgz"
   "version" "4.16.3"
@@ -3494,46 +3474,6 @@
     "electron-to-chromium" "^1.3.649"
     "escalade" "^3.1.1"
     "node-releases" "^1.1.70"
-
-"browserslist@^4.6.2":
-  "integrity" "sha512-Z+vsCZIvCBvqLoYkBFTwEYH3v5MCQbsAjp50ERycpOjnPmolg1Gjy4+KaWWpm8QOJt9GHkhdqAl14NpCX73CWA=="
-  "resolved" "https://registry.npmjs.org/browserslist/-/browserslist-4.14.5.tgz"
-  "version" "4.14.5"
-  dependencies:
-    "caniuse-lite" "^1.0.30001135"
-    "electron-to-chromium" "^1.3.571"
-    "escalade" "^3.1.0"
-    "node-releases" "^1.1.61"
-
-"browserslist@^4.6.4":
-  "integrity" "sha512-Z+vsCZIvCBvqLoYkBFTwEYH3v5MCQbsAjp50ERycpOjnPmolg1Gjy4+KaWWpm8QOJt9GHkhdqAl14NpCX73CWA=="
-  "resolved" "https://registry.npmjs.org/browserslist/-/browserslist-4.14.5.tgz"
-  "version" "4.14.5"
-  dependencies:
-    "caniuse-lite" "^1.0.30001135"
-    "electron-to-chromium" "^1.3.571"
-    "escalade" "^3.1.0"
-    "node-releases" "^1.1.61"
-
-"browserslist@^4.8.5":
-  "integrity" "sha512-Z+vsCZIvCBvqLoYkBFTwEYH3v5MCQbsAjp50ERycpOjnPmolg1Gjy4+KaWWpm8QOJt9GHkhdqAl14NpCX73CWA=="
-  "resolved" "https://registry.npmjs.org/browserslist/-/browserslist-4.14.5.tgz"
-  "version" "4.14.5"
-  dependencies:
-    "caniuse-lite" "^1.0.30001135"
-    "electron-to-chromium" "^1.3.571"
-    "escalade" "^3.1.0"
-    "node-releases" "^1.1.61"
-
-"browserslist@^4.9.1":
-  "integrity" "sha512-Z+vsCZIvCBvqLoYkBFTwEYH3v5MCQbsAjp50ERycpOjnPmolg1Gjy4+KaWWpm8QOJt9GHkhdqAl14NpCX73CWA=="
-  "resolved" "https://registry.npmjs.org/browserslist/-/browserslist-4.14.5.tgz"
-  "version" "4.14.5"
-  dependencies:
-    "caniuse-lite" "^1.0.30001135"
-    "electron-to-chromium" "^1.3.571"
-    "escalade" "^3.1.0"
-    "node-releases" "^1.1.61"
 
 "browserslist@4.10.0":
   "integrity" "sha512-TpfK0TDgv71dzuTsEAlQiHeWQ/tiPqgNZVdv046fvNtBZrjbv2O3TsWCDU0AWGJJKCF/KsjNdLzR9hXOsh/CfA=="
@@ -3729,7 +3669,7 @@
     "lodash.memoize" "^4.1.2"
     "lodash.uniq" "^4.5.0"
 
-"caniuse-lite@^1.0.0", "caniuse-lite@^1.0.30000844", "caniuse-lite@^1.0.30000981", "caniuse-lite@^1.0.30001035", "caniuse-lite@^1.0.30001109", "caniuse-lite@^1.0.30001135", "caniuse-lite@^1.0.30001181":
+"caniuse-lite@^1.0.0", "caniuse-lite@^1.0.30000844", "caniuse-lite@^1.0.30000981", "caniuse-lite@^1.0.30001035", "caniuse-lite@^1.0.30001109", "caniuse-lite@^1.0.30001181":
   "integrity" "sha512-QQmLOGJ3DEgokHbMSA8cj2a+geXqmnpyOFT0lhQV6P3/YOJvGDEwoedcwxEQ30gJIwIIunHIicunJ2rzK5gB2A=="
   "resolved" "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001228.tgz"
   "version" "1.0.30001228"
@@ -5386,11 +5326,6 @@
   "resolved" "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.550.tgz"
   "version" "1.3.550"
 
-"electron-to-chromium@^1.3.571":
-  "integrity" "sha512-0nCJ7cSqnkMC+kUuPs0YgklFHraWGl/xHqtZWWtOeVtyi+YqkoAOMGuZQad43DscXCQI/yizcTa3u6B5r+BLww=="
-  "resolved" "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.582.tgz"
-  "version" "1.3.582"
-
 "electron-to-chromium@^1.3.649":
   "integrity" "sha512-INNzKoL9ceOpPCpF5J+Fp9AOHY1RegwKViohAyTzV3XbkuRUx04r4v8edsDbevsog8UuL0GvD/Qerr2HwVTlSA=="
   "resolved" "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.3.661.tgz"
@@ -5598,7 +5533,7 @@
     "d" "^1.0.1"
     "ext" "^1.1.2"
 
-"escalade@^3.1.0", "escalade@^3.1.1":
+"escalade@^3.1.1":
   "integrity" "sha512-k0er2gUkLf8O0zKJiAhmkTnJlTvINGv7ygDNPbeIsX/TJjGJZHuh9B2UxbsaEkmlEo9MfhrSzmhIlhRlI2GXnw=="
   "resolved" "https://registry.npmjs.org/escalade/-/escalade-3.1.1.tgz"
   "version" "3.1.1"
@@ -5771,12 +5706,7 @@
   dependencies:
     "prettier-linter-helpers" "^1.0.0"
 
-"eslint-plugin-react-hooks@^1.6.1":
-  "integrity" "sha512-iXTCFcOmlWvw4+TOE8CLWj6yX1GwzT0Y6cUfHHZqWnSk144VmVIRcVGtUAzrLES7C798lmvnt02C7rxaOX1HNA=="
-  "resolved" "https://registry.npmjs.org/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-1.7.0.tgz"
-  "version" "1.7.0"
-
-"eslint-plugin-react-hooks@^1.7.0":
+"eslint-plugin-react-hooks@^1.6.1", "eslint-plugin-react-hooks@^1.7.0":
   "integrity" "sha512-iXTCFcOmlWvw4+TOE8CLWj6yX1GwzT0Y6cUfHHZqWnSk144VmVIRcVGtUAzrLES7C798lmvnt02C7rxaOX1HNA=="
   "resolved" "https://registry.npmjs.org/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-1.7.0.tgz"
   "version" "1.7.0"
@@ -9142,7 +9072,7 @@
   dependencies:
     "minimist" "^1.2.5"
 
-"moment@^2.10.2", "moment@^2.24.0", "moment@^2.25.3", "moment@^2.29.1":
+"moment@^2.10.2", "moment@^2.24.0", "moment@^2.25.3", "moment@^2.29.0", "moment@^2.29.1":
   "integrity" "sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ=="
   "resolved" "https://registry.npmjs.org/moment/-/moment-2.29.1.tgz"
   "version" "2.29.1"
@@ -9362,7 +9292,7 @@
     "shellwords" "^0.1.1"
     "which" "^1.3.0"
 
-"node-releases@^1.1.52", "node-releases@^1.1.61":
+"node-releases@^1.1.52":
   "integrity" "sha512-Iec8O9166/x2HRMJyLLLWkd0sFFLrFNy+Xf+JQfSQsdBJzPcHpNl3JQ9gD4j+aJxmCa25jNsIbM4bmACtSbkSg=="
   "resolved" "https://registry.npmjs.org/node-releases/-/node-releases-1.1.64.tgz"
   "version" "1.1.64"
@@ -10916,7 +10846,7 @@
     "kleur" "^3.0.3"
     "sisteransi" "^1.0.4"
 
-"prop-types@^15.5.10", "prop-types@^15.5.4", "prop-types@^15.5.6", "prop-types@^15.5.7", "prop-types@^15.6.0", "prop-types@^15.6.1", "prop-types@^15.6.2", "prop-types@^15.7.2", "prop-types@15":
+"prop-types@^15.5.10", "prop-types@^15.5.4", "prop-types@^15.5.6", "prop-types@^15.5.7", "prop-types@^15.6.0", "prop-types@^15.6.1", "prop-types@^15.6.2", "prop-types@^15.7.0", "prop-types@^15.7.2", "prop-types@15":
   "integrity" "sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ=="
   "resolved" "https://registry.npmjs.org/prop-types/-/prop-types-15.7.2.tgz"
   "version" "15.7.2"
@@ -11668,6 +11598,11 @@
   dependencies:
     "react-transition-group" "^2.2.1"
 
+"react-moment@^1.1.1":
+  "integrity" "sha512-WjwvxBSnmLMRcU33do0KixDB+9vP3e84eCse+rd+HNklAMNWyRgZTDEQlay/qK6lcXFPRuEIASJTpEt6pyK7Ww=="
+  "resolved" "https://registry.npmjs.org/react-moment/-/react-moment-1.1.1.tgz"
+  "version" "1.1.1"
+
 "react-redux@^7.2.2":
   "integrity" "sha512-8+CQ1EvIVFkYL/vu6Olo7JFLWop1qRUeb46sGtIMDCSpgwPQq8fPLpirIB0iTqFe9XYEFPHssdX8/UwN6pAkEA=="
   "resolved" "https://registry.npmjs.org/react-redux/-/react-redux-7.2.2.tgz"
@@ -11903,7 +11838,7 @@
     "object-assign" "^4.1.0"
     "prop-types" "^15.5.10"
 
-"react@^16.14.0":
+"react@^16.0 || ^17.0.0", "react@^16.14.0":
   "integrity" "sha512-0X2CImDkJGApiAlcf0ODKIneSwBPhqJawOa5wCtKbu7ZECrmS26NvtSILynQ66cgkT/RJ4LidJOc3bUESwmU8g=="
   "resolved" "https://registry.npmjs.org/react/-/react-16.14.0.tgz"
   "version" "16.14.0"

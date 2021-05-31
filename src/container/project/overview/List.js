@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Table, Progress, Pagination, Tag, Spin } from 'antd';
+import { Row, Col, Table, Progress, Pagination, Spin } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
+import Moment from 'react-moment';
 import { Link } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
 import Heading from '../../../components/heading/heading';
 import { Cards } from '../../../components/cards/frame/cards-frame';
-// import { Tag } from '../../../components/tags/tags';
+import { Tag } from '../../../components/tags/tags';
 import { ProjectPagination, ProjectListTitle, ProjectListAssignees, ProjectList } from '../style';
 import { linkdinOverviewGetData, linkdinOverviewFilterData } from '../../../redux/chartContent/actionCreator';
 import { customTooltips } from '../../../components/utilities/utilities';
 import { ChartjsLineChart } from '../../../components/charts/chartjs';
 import { Dropdown } from '../../../components/dropdown/dropdown';
+import { ChartContainer } from '../../dashboard/style';
 
 const ProjectLists = () => {
   // const project = useSelector(
   //   state => state.projects.data);
+  Moment.globalFormat = 'DD MMM YYYY';
   const dispatch = useDispatch();
   const { linkdinOverviewState, liIsLoading, project } = useSelector(state => {
     return {
@@ -166,7 +169,7 @@ const ProjectLists = () => {
 
   if (projects.length)
     projects.map(value => {
-      const { id, title, status, category, percentage } = value;
+      const { id, title, isDefault, category, tags, percentage, created } = value;
       return dataSource.push({
         key: id,
         profile: (
@@ -178,18 +181,15 @@ const ProjectLists = () => {
             <p>{category}</p>
           </ProjectListTitle>
         ),
-        createdDate: <span className="date-started">26 Dec 2019</span>,
+        createdDate: <span className="date-started"><Moment unix>{created}</Moment></span>,
         tags: (
-          <ProjectListAssignees>
-            <div className="taglist-wrap">
-              <Tag>Tag 1</Tag>
-              <Tag>Tag 1</Tag>
-              <Tag>Tag 1</Tag>
-              <Tag>Tag 1</Tag>
-            </div>
-          </ProjectListAssignees>
+          <div className="taglist-wrap">
+            <Tag color="#f50">1500p</Tag>
+            <Tag color="#2db7f5">module 2</Tag>
+            <Tag color="#87d068">verify name</Tag>
+          </div>
         ),
-        status: <Tag className={status}>{status}</Tag>,
+        status: (isDefault)? <Tag color="#108ee9">Default</Tag>:null,
         usage: (
           // <div className="project-list-progress">
           //   <Progress percent={status === 'complete' ? 100 : percentage} strokeWidth={5} className="progress-primary" />
@@ -201,7 +201,7 @@ const ProjectLists = () => {
             </div>
           ) : (
           <Row className="line-chart-row">
-            <Col xxl={10} xs={24}>
+             {/*<Col xxl={10} xs={24}>
               <div className="growth-upward">
                 <p>Clicks</p>
                 <Heading as="h4">
@@ -228,7 +228,7 @@ const ProjectLists = () => {
                   />
                 </ChartContainer>
               </div>
-            </Col>
+            </Col> */}
           </Row>
           )
         ),

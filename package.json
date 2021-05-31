@@ -44,6 +44,7 @@
     "react-leaflet-markercluster": "^2.0.0-rc3",
     "react-masonry-css": "^1.0.14",
     "react-modal-video": "^1.2.6",
+    "react-moment": "^1.1.1",
     "react-redux": "^7.2.2",
     "react-responsive-masonry": "^2.1.1",
     "react-router-dom": "^5.1.2",
