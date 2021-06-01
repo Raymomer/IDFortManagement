@@ -125,19 +125,18 @@ const Info = () => {
               </Form.Item>
 
               <Form.Item name="image" label="Upload Document Image Back">
-                {/* <Cards title="Avatar">
-                  <Upload
-                    name="avatar"
-                    listType="picture-card"
-                    className="avatar-uploader"
-                    showUploadList={false}
-                    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                    beforeUpload={beforeUpload}
-                    onChange={onHandleChange}
-                  >
-                    {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
-                  </Upload>
-                </Cards> */}
+                <figure className="photo-upload align-center-v"
+                  style={{
+                    position: "inherit",
+                  }}>
+                  <figcaption>
+                    <Upload>
+                      <Link className="btn-upload" to="#">
+                        <FeatherIcon icon="camera" size={16} />
+                      </Link>
+                    </Upload>
+                  </figcaption>
+                </figure>
               </Form.Item>
               <Form.Item name="image" label="Upload Document Image Back">
                 <figure className="photo-upload align-center-v"

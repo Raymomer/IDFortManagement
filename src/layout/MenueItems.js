@@ -65,7 +65,7 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu, events }) => {
         </NavLink>
       </Menu.Item>
 
-      <SubMenu key="layout" icon={!topMenu && <FeatherIcon icon="layout" />} title="Layouts">
+      {/* <SubMenu key="layout" icon={!topMenu && <FeatherIcon icon="layout" />} title="Layouts">
         <Menu.Item key="light">
           <NavLink
             onClick={() => {
@@ -132,93 +132,41 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu, events }) => {
             LTR
           </NavLink>
         </Menu.Item>
-      </SubMenu>
-      {!topMenu && <p className="sidebar-nav-title">Applications</p>}
+      </SubMenu> */}
       <SubMenu key="profile" icon={!topMenu && <FeatherIcon icon="target" />} title="Profile">
+        <Menu.Item key="profileCreate">
+          {/* <NavLink onClick={toggleCollapsed} to={`${path}/wizards/one`}>
+            Create Profile
+          </NavLink> */}
+          <NavLink onClick={toggleCollapsed} to={`${path}/starter`}>
+          Create Profile
+          </NavLink>
+        </Menu.Item>
+        
         <Menu.Item key="views">
           <NavLink onClick={toggleCollapsed} to={`${path}/project/view/list`}>
             Profile List
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="profileCreate">
-          <NavLink onClick={toggleCollapsed} to={`${path}/wizards/one`}>
-            Create Profile
-          </NavLink>
-        </Menu.Item>
-        <Menu.Item key="profileDetails">
+        {/* <Menu.Item key="profileDetails">
           <NavLink onClick={toggleCollapsed} to={`${path}/project/projectDetails/1`}>
             Profile Details
           </NavLink>
-        </Menu.Item>
+        </Menu.Item> */}
       </SubMenu>
-
-      <Menu.Item
-        icon={
-          !topMenu && (
-            <NavLink className="menuItem-iocn" to={`${path}/app/calendar/month`}>
-              <FeatherIcon icon="calendar" />
-            </NavLink>
-          )
-        }
-        key="calendar"
-      >
-        <NavLink onClick={toggleCollapsed} to={`${path}/app/calendar/month`}>
-          Calendar
-        </NavLink>
-      </Menu.Item>
 
       <SubMenu key="users" icon={!topMenu && <FeatherIcon icon="users" />} title="Users">
         <Menu.Item key="addUser">
           <NavLink onClick={toggleCollapsed} to={`${path}/users/add-user/info`}>
-            Upload
+            Upload Document
           </NavLink>
         </Menu.Item>
-        <Menu.Item key="userList">
+        {/* <Menu.Item key="userList">
           <NavLink onClick={toggleCollapsed} to={`${path}/users/dataTable`}>
             Users List
           </NavLink>
-        </Menu.Item>
+        </Menu.Item> */}
       </SubMenu>
-
-      <Menu.Item
-        icon={
-          !topMenu && (
-            <NavLink className="menuItem-iocn" to={`${path}/app/note/all`}>
-              <FeatherIcon icon="file-text" />
-            </NavLink>
-          )
-        }
-        key="note"
-      >
-        <NavLink onClick={toggleCollapsed} to={`${path}/app/note/all`}>
-          Note
-        </NavLink>
-      </Menu.Item>
-
-  
-      <SubMenu
-        key="importExport"
-        icon={!topMenu && <ReactSVG className="sDash_menu-item-icon" src={require('../static/img/icon/repeat.svg')} />}
-        title={
-          <>
-            <span className="pl-0">Import Export</span>
-          </>
-        }
-      >
-        <Menu.Item key="import">
-          <NavLink onClick={toggleCollapsed} to={`${path}/importExport/import`}>
-            Import
-          </NavLink>
-        </Menu.Item>
-        <Menu.Item key="export">
-          <NavLink onClick={toggleCollapsed} to={`${path}/importExport/export`}>
-            Export
-          </NavLink>
-        </Menu.Item>
-      </SubMenu>
-
-
-      {!topMenu && <p className="sidebar-nav-title">Pages</p>}
 
       <Menu.Item
         icon={
@@ -234,7 +182,7 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu, events }) => {
           Settings
         </NavLink>
       </Menu.Item>
-      <Menu.Item
+      {/* <Menu.Item
         icon={
           !topMenu && (
             <NavLink className="menuItem-iocn" to={`${path}/404`}>
@@ -247,7 +195,7 @@ const MenuItems = ({ darkMode, toggleCollapsed, topMenu, events }) => {
         <NavLink onClick={toggleCollapsed} to={`${path}/404`}>
           404
         </NavLink>
-      </Menu.Item>
+      </Menu.Item> */}
     </Menu>
   );
 };
