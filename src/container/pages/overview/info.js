@@ -9,11 +9,19 @@ import { ShowResponse, TestimonialStyleWrapper } from '../style';
 import { Modal } from '../../../components/modals/antd-modals';
 import { Cards } from '../../../components/cards/frame/cards-frame';
 
+import DEFAULT from '../../../demoData/default.json'
+
+
+
 import SwiperCore, { Navigation, Pagination } from 'swiper';
 import Swiper from 'react-id-swiper';
+import axios from 'axios'
+import FileSaver, { saveAs } from 'file-saver'
 
 import 'swiper/swiper.scss'
 import 'swiper/components/pagination/pagination.scss';
+import { FormProvider } from 'antd/lib/form/context';
+import { object } from 'prop-types';
 
 
 SwiperCore.use([Navigation, Pagination]);
@@ -25,8 +33,25 @@ const paramsThree = {
   },
 };
 
+
+
 const { Option } = Select;
 const Info = () => {
+
+  const ImageList = ({ title }) => {
+
+    console.log(Object(state.result.outputImage))
+
+    return (
+      `      <div>
+        <label>title</label>
+      </div>`
+    )
+  }
+
+
+
+
   const [state, setState] = useState({
     values: '',
     selectedRowKeys: 0,
@@ -36,8 +61,13 @@ const Info = () => {
     modalType: 'primary',
     url: null,
     update: {},
+    result: {},
+    documentImage: {},
   });
 
+
+
+  console.log(state)
   const { update } = state;
   const [form] = Form.useForm();
 
@@ -45,10 +75,14 @@ const Info = () => {
     setState({ ...state, values });
   };
 
-  const showModal = () => {
+  const showModal = (response) => {
+
+
     setState({
       ...state,
       visible: true,
+      result: response,
+      documentImage: response.outputImage
     });
 
   };
@@ -84,20 +118,83 @@ const Info = () => {
   };
 
   const onHandleChange = info => {
-      if (info.file.status === 'uploading') {
-        setState({ ...state, loading: true });
-        return;
-      }
-      if (info.file.status === 'done') {
-        // Get this url from response in real world.
-        getBase64(info.file.originFileObj, imageUrl =>
-          setState({
-            imageUrl,
-            loading: false,
-          }),
-        );
-      }
-    };
+    console.log("onHandleChange")
+    if (info.file.status === 'uploading') {
+      console.log(info.fileList)
+      setState({ ...state, loading: true });
+      return;
+    }
+    if (info.file.status === 'done') {
+      // Get this url from response in real world.
+      getBase64(info.file.originFileObj, imageUrl =>
+        setState({
+          imageUrl,
+          loading: false,
+        }),
+
+      );
+    }
+  };
+  const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+  const scan = async () => {
+    let r = {}
+    let base64arr
+    if (document.querySelector('#document').files.length > 0) {
+      let base64str = await toBase64(document.querySelector('#document').files[0])
+      base64arr = base64str.split("base64,")
+      r["document"] = base64arr[1]
+    }
+    if (document.querySelector('#documentBack').files.length > 0) {
+      let base64str = await toBase64(document.querySelector('#documentBack').files[0])
+      base64arr = base64str.split("base64,")
+      r["documentBack"] = base64arr[1]
+    }
+    if (document.querySelector('#face').files.length > 0) {
+      let base64str = await toBase64(document.querySelector('#face').files[0])
+      base64arr = base64str.split("base64,")
+      r["face"] = base64arr[1]
+    }
+
+    // r["profileRaw"] = DEFAULT
+
+
+
+    // var blob = new Blob([DEFAULT], {type: "text/plain;charset=utf-8" })
+    // FileSaver.saveAs(blob, `http://192.168.0.246:8080/` + "test.json")
+
+    let getProfile = new Promise((resolve, reject) => {
+      axios.get(`http://192.168.0.246:8080/default.json`).then(res => {
+        r["profileRaw"] = res.data
+        resolve()
+      }).catch(err => {
+        console.log("error => ", err)
+      })
+    })
+
+    await getProfile
+    let url = "http://192.168.0.104/"
+    axios.post(url, r).then(function (response) {
+      let str = JSON.stringify(response.data, null, 2);
+
+      showModal(response.data)
+
+    }).catch(function (error) {
+
+      console.log(error)
+    });
+
+
+
+
+  }
+
+
+
 
   return (
     <Row justify="center">
@@ -108,64 +205,34 @@ const Info = () => {
               <Heading className="form-title" as="h4">
                 Upload Single Document
               </Heading>
-              <Form.Item name="image" label="Upload Document Image">
+
+              <Form.Item name="image" label="Front Image">
                 <figure className="photo-upload align-center-v"
                   style={{
                     position: "inherit",
                   }}>
-                  <figcaption>
-                    <Upload>
-                      <Link className="btn-upload" to="#">
-                        <FeatherIcon icon="camera" size={16} />
-                      </Link>
-                    </Upload>
-
-                  </figcaption>
+                  <input type="file" id="document" className="form-control"></input>
                 </figure>
               </Form.Item>
 
-              <Form.Item name="image" label="Upload Document Image Back">
+              <Form.Item name="image" label="Back Image">
                 <figure className="photo-upload align-center-v"
                   style={{
                     position: "inherit",
                   }}>
-                  <figcaption>
-                    <Upload>
-                      <Link className="btn-upload" to="#">
-                        <FeatherIcon icon="camera" size={16} />
-                      </Link>
-                    </Upload>
-                  </figcaption>
+                  <input type="file" id="documentBack" className="form-control"></input>
                 </figure>
               </Form.Item>
-              <Form.Item name="image" label="Upload Document Image Back">
+
+              <Form.Item name="image" label="Face Image">
                 <figure className="photo-upload align-center-v"
                   style={{
                     position: "inherit",
                   }}>
-                  <figcaption>
-                    <Upload>
-                      <Link className="btn-upload" to="#">
-                        <FeatherIcon icon="camera" size={16} />
-                      </Link>
-                    </Upload>
-                  </figcaption>
+                  <input type="file" id="face" className="form-control"></input>
                 </figure>
               </Form.Item>
-              <Form.Item name="image" label="Upload Document Image Back">
-                <figure className="photo-upload align-center-v"
-                  style={{
-                    position: "inherit",
-                  }}>
-                  <figcaption>
-                    <Upload>
-                      <Link className="btn-upload" to="#">
-                        <FeatherIcon icon="camera" size={16} />
-                      </Link>
-                    </Upload>
-                  </figcaption>
-                </figure>
-              </Form.Item>
+
 
 
 
@@ -194,6 +261,9 @@ const Info = () => {
                   <Button onClick={showModal} htmlType="submit" type="primary">
                     <Link to="#">Scan & Result</Link>
                   </Button>
+                  <Button onClick={scan} htmlType="submit" type="primary">
+                    <Link to="#">Send</Link>
+                  </Button>
                 </div>
               </Form.Item>
             </Form>
@@ -219,17 +289,22 @@ const Info = () => {
 
                 </Form.Item>
 
-                <Form.Item label="Document Image" name="name" st>
+                <Form.Item label="Document Image" name="name">
                   <TestimonialStyleWrapper>
                     <div
                       className="testimonial-block theme-4"
                       style={{
-                        "background-color": "#fff"
+                        "backgroundColor": "#fff"
                       }}>
                       <Swiper {...paramsThree}>
-                        <img style={{ width: '100%' }} src={require(`../../../static/img/users/card/1.png`)} alt="" />
-                        <img style={{ width: '100%' }} src={require(`../../../static/img/users/card/2.png`)} alt="" />
+                        {/* <img style={{ width: '100%' }} src={`data:image/png;base64,` + state.documentImage.front} alt="" /> */}
+                        {/* <img style={{ width: '100%' }} src={`data:image/png;base64,` + state.result.outputImage.front} alt="" /> */}
+
+                        {/* <img style={{ width: '100%' }} src={require(`../../../static/img/users/card/1.png`)} alt="" /> */}
+
                       </Swiper>
+                      <ImageList
+                        title="hi" />
                     </div>
 
                   </TestimonialStyleWrapper>
