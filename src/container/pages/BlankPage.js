@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from "../../components/axios";
-import { Row, Col, Form, Input, Select, Switch, Collapse, InputNumber } from 'antd';
+import { Row, Col, Form, Input, Select, Switch, Table, Tooltip, InputNumber } from 'antd';
 import FeatherIcon from 'feather-icons-react';
 import { PageHeader } from '../../components/page-headers/page-headers';
 import { Main } from '../styled';
@@ -8,51 +8,62 @@ import { Cards } from '../../components/cards/frame/cards-frame';
 import { Popover } from '../../components/popup/popup';
 import { Button } from '../../components/buttons/buttons';
 import { Slider } from '../../components/slider/slider';
-import BannerCard from '../../components/cards/BannerCard';
-import { ShareButtonPageHeader } from '../../components/buttons/share-button/share-button';
-import { ExportButtonPageHeader } from '../../components/buttons/export-button/export-button';
-import { CalendarButtonPageHeader } from '../../components/buttons/calendar-button/calendar-button';
-import { HorizontalForm } from '../forms/overview/HorizontalForm';
-import { HorizontalFormStyleWrap } from '../forms/overview/Style';
-import { CardStyleWrapper } from '../../container/ui-elements/ui-elements-styled';
 
-const { Panel } = Collapse;
+
 const { Option } = Select;
-const { TextArea } = Input;
+// Slider Mark
 const marks = {
-    0: '0',
-    0.5: '0.5',
-    1: {
-      style: {
-        color: '#f50',
-      },
-      label: <strong>1</strong>,
+  0: '0',
+  0.5: '0.5',
+  1: {
+    style: {
+      color: '#f50',
     },
-  };
+    label: <strong>1</strong>,
+  },
+};
+// Decision Slider Mark
+const decisionsMark = {
+  "-1": {
+    style: {
+      color: '#f50',
+    },
+    label: <strong>-1</strong>
+  },
+  0: '0',
+  0.5: '0.5',
+  1: '1'
+};
 
-// const getUserData = () => {
-//     return new Promise((resolve, reject) => {
+// const getUserData = async () => {
+//     let down = new Promise((resolve, reject) => {
 //       axios.get('https://mocki.io/v1/b56899dd-8da2-4e4b-b033-7e3d24498ff4')
 //           .then(res => resolve(res.data))
 //           .catch(err => reject(err));
 //     });
+
+//     return await down
 //   }
 
-// let temp;
-// getUserData().then(function(value) {
-//   temp = value;
-// }); 
+// let test;
+// getUserData().then(res => {
+//   // console.log(res);
+//   test = { res }; 
+// })
+
 
 // b56899dd-8da2-4e4b-b033-7e3d24498ff4
 
 
 const BlankPage = () => {
 
+  // const [state, setState] = useState(test);
+  // console.log(state);
   // const [data, setData] = useState(temp);
   // console.log("After2=>", data);
   // const [state, setState] = useState(data);
   
-  //getProfile
+  // getProfile
   const [state, setState] = useState({
     canvasSize: 1800,
     orientationCorrection: true,
@@ -80,382 +91,382 @@ const BlankPage = () => {
     decisionTrigger: {
       review: 1,
       reject: 1
-    },
-    decisions:{
-      UNRECOGNIZED_DOCUMENT: { 
-        enabled: false,
-        review: -1, 
-        reject: 0.5,
-        weight: 1 
-      },
-      UNRECOGNIZED_BACK_DOCUMENT: { 
-        enabled: true,
-        review: -1, 
-        reject: 0,
-        weight: 1 
-      },
-      UNRECOGNIZED_BACK_BARCODE: {
-        enabled: true,
-        review: -1,
-        reject: -1,
-        weight: 1
-      },
-      INVALID_BACK_DOCUMENT: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      SELFIE_FACE_NOT_FOUND: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      SELFIE_MULTIPLE_FACES: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      DOCUMENT_FACE_NOT_FOUND:  {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      DOCUMENT_FACE_LANDMARK_ERR: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      SELFIE_FACE_LANDMARK_ERR: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      INTERNAL_FACE_VERIFICATION_ERR: {
-        enabled: true,
-        review: 0, 
-        reject: -1,
-        weight: 1
-      },
-      FACE_MISMATCH: { 
-        enabled: true,
-        review: 0.45, 
-        reject: 0.5, 
-        weight: 1
-      },
-      FACE_IDENTICAL: {
-        enabled: true,
-        review: 0,
-        reject: -1,
-        weight: 1
-      },
-      DOCUMENT_COUNTRY_MISMATCH: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      DOCUMENT_STATE_MISMATCH: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      DOCUMENT_NAME_MISMATCH: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      DOCUMENT_DOB_MISMATCH: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      MISSING_EXPIRY_DATE: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      MISSING_ISSUE_DATE: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      MISSING_BIRTH_DATE: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      MISSING_DOCUMENT_NUMBER: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      MISSING_PERSONAL_NUMBER: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      MISSING_ADDRESS: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      MISSING_POSTCODE:  {
-        enabled: true,
-        review: 0,
-        reject: -1,
-        weight: 1
-      },
-      MISSING_NAME: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      MISSING_LOCAL_NAME: {
-        enabled: true,
-        review: 0,
-        reject: -1,
-        weight: 1
-      },
-      MISSING_GENDER: {
-        enabled: true,
-        review: 0,
-        reject: -1,
-        weight: 1
-      },
-      MISSING_HEIGHT: {
-        enabled: true,
-        review: -1,
-        reject: -1,
-        weight: 1
-      },
-      MISSING_WEIGHT: {
-        enabled: true,
-        review: -1,
-        reject: -1,
-        weight: 1
-      },
-      MISSING_HAIR_COLOR: {
-        enabled: true,
-        review: -1,
-        reject: -1,
-        weight: 1
-      },
-      MISSING_EYE_COLOR: {
-        enabled: true,
-        review: -1,
-        reject: -1,
-        weight: 1
-      },
-      MISSING_RESTRICTIONS: {
-        enabled: true,
-        review: -1,
-        reject: -1,
-        weight: 1
-      },
-      MISSING_VEHICLE_CLASS: {
-        enabled: true,
-        review: -1,
-        reject: -1,
-        weight: 1
-      },
-      MISSING_ENDORSEMENT: {
-        enabled: true,
-        review: -1,
-        reject: -1,
-        weight: 1
-      },
-      UNDER_18:  {
-        enabled: true,
-        review: -1,
-        reject: -1,
-        weight: 1
-      },
-      UNDER_19: {
-        enabled: true,
-        review: -1,
-        reject: -1,
-        weight: 1
-      },
-      UNDER_20: {
-        enabled: true,
-        review: -1,
-        reject: -1,
-        weight: 1
-      },
-      UNDER_21:  {
-        enabled: true,
-        review: -1,
-        reject: -1,
-        weight: 1
-      },
-      DOCUMENT_EXPIRED: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      NAME_VERIFICATION_FAILED: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      DOB_VERIFICATION_FAILED: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      AGE_VERIFICATION_FAILED: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      ID_NUMBER_VERIFICATION_FAILED: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      ADDRESS_VERIFICATION_FAILED: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      POSTCODE_VERIFICATION_FAILED:  {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      TYPE_NOT_ACCEPTED: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      COUNTRY_NOT_ACCEPTED: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      STATE_NOT_ACCEPTED:     {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      RECAPTURED_DOCUMENT:  {
-        enabled: true,
-        review: 0,
-        reject: -1,
-        weight: 1
-      },
-      SCREEN_DETECTED:  {
-        enabled: true,
-        review: 0,
-        reject: -1,
-        weight: 1
-      },
-      IMAGE_FORGERY_DETECTED: {
-        enabled: true,
-        review: 0,
-        reject: -1,
-        weight: 1
-      },
-      FEATURE_VERIFICATION_FAILED: {
-        enabled: true,
-        review: 0,
-        reject: -1,
-        weight: 1
-      },
-      IMAGE_EDITED: {
-        enabled: true,
-        review: 0,
-        reject: -1,
-        weight: 1
-      },
-      AML_SANCTION: {
-        enabled: true,
-        review: 0,
-        reject: -1,
-        weight: 1
-      },
-      AML_CRIME: {
-        enabled: true,
-        review: 0,
-        reject: -1,
-        weight: 1
-      },
-      AML_PEP: {
-        enabled: true,
-        review: 0,
-        reject: -1,
-        weight: 1
-      },
-      LOW_TEXT_CONFIDENCE: {
-        enabled: true,
-        review: -1,
-        reject: -1,
-        weight: 1
-      },
-      FAKE_ID_DETECTED: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      ARTIFICIAL_IMAGE: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      ARTIFICIAL_TEXT: {
-        enabled: true,
-        review: -1,
-        reject: 0,
-        weight: 1
-      },
-      TEXT_FORGERY_DETECTED: {
-        enabled: true,
-        review: 0,
-        reject: -1,
-        weight: 1
-      },
-      IP_COUNTRY_MISMATCH: {
-        enabled: true,
-        review: -1,
-        reject: -1,
-        weight: 1
-      },
-      UNKNOWN: {
-        enabled: true,
-        review: -1,
-        reject: -1
-      }
     }
   });
-
+  
+  const [decisions, setDecisions] = useState({
+    UNRECOGNIZED_DOCUMENT: {
+      enabled: false,
+      review: -1,
+      reject: 0.5,
+      weight: 1
+    },
+    UNRECOGNIZED_BACK_DOCUMENT: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    UNRECOGNIZED_BACK_BARCODE: {
+      enabled: true,
+      review: -1,
+      reject: -1,
+      weight: 1
+    },
+    INVALID_BACK_DOCUMENT: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    SELFIE_FACE_NOT_FOUND: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    SELFIE_MULTIPLE_FACES: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    DOCUMENT_FACE_NOT_FOUND: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    DOCUMENT_FACE_LANDMARK_ERR: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    SELFIE_FACE_LANDMARK_ERR: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    INTERNAL_FACE_VERIFICATION_ERR: {
+      enabled: true,
+      review: 0,
+      reject: -1,
+      weight: 1
+    },
+    FACE_MISMATCH: {
+      enabled: true,
+      review: 0.45,
+      reject: 0.5,
+      weight: 1
+    },
+    FACE_IDENTICAL: {
+      enabled: true,
+      review: 0,
+      reject: -1,
+      weight: 1
+    },
+    DOCUMENT_COUNTRY_MISMATCH: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    DOCUMENT_STATE_MISMATCH: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    DOCUMENT_NAME_MISMATCH: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    DOCUMENT_DOB_MISMATCH: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    MISSING_EXPIRY_DATE: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    MISSING_ISSUE_DATE: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    MISSING_BIRTH_DATE: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    MISSING_DOCUMENT_NUMBER: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    MISSING_PERSONAL_NUMBER: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    MISSING_ADDRESS: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    MISSING_POSTCODE: {
+      enabled: true,
+      review: 0,
+      reject: -1,
+      weight: 1
+    },
+    MISSING_NAME: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    MISSING_LOCAL_NAME: {
+      enabled: true,
+      review: 0,
+      reject: -1,
+      weight: 1
+    },
+    MISSING_GENDER: {
+      enabled: true,
+      review: 0,
+      reject: -1,
+      weight: 1
+    },
+    MISSING_HEIGHT: {
+      enabled: true,
+      review: -1,
+      reject: -1,
+      weight: 1
+    },
+    MISSING_WEIGHT: {
+      enabled: true,
+      review: -1,
+      reject: -1,
+      weight: 1
+    },
+    MISSING_HAIR_COLOR: {
+      enabled: true,
+      review: -1,
+      reject: -1,
+      weight: 1
+    },
+    MISSING_EYE_COLOR: {
+      enabled: true,
+      review: -1,
+      reject: -1,
+      weight: 1
+    },
+    MISSING_RESTRICTIONS: {
+      enabled: true,
+      review: -1,
+      reject: -1,
+      weight: 1
+    },
+    MISSING_VEHICLE_CLASS: {
+      enabled: true,
+      review: -1,
+      reject: -1,
+      weight: 1
+    },
+    MISSING_ENDORSEMENT: {
+      enabled: true,
+      review: -1,
+      reject: -1,
+      weight: 1
+    },
+    UNDER_18: {
+      enabled: true,
+      review: -1,
+      reject: -1,
+      weight: 1
+    },
+    UNDER_19: {
+      enabled: true,
+      review: -1,
+      reject: -1,
+      weight: 1
+    },
+    UNDER_20: {
+      enabled: true,
+      review: -1,
+      reject: -1,
+      weight: 1
+    },
+    UNDER_21: {
+      enabled: true,
+      review: -1,
+      reject: -1,
+      weight: 1
+    },
+    DOCUMENT_EXPIRED: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    NAME_VERIFICATION_FAILED: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    DOB_VERIFICATION_FAILED: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    AGE_VERIFICATION_FAILED: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    ID_NUMBER_VERIFICATION_FAILED: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    ADDRESS_VERIFICATION_FAILED: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    POSTCODE_VERIFICATION_FAILED: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    TYPE_NOT_ACCEPTED: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    COUNTRY_NOT_ACCEPTED: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    STATE_NOT_ACCEPTED: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    RECAPTURED_DOCUMENT: {
+      enabled: true,
+      review: 0,
+      reject: -1,
+      weight: 1
+    },
+    SCREEN_DETECTED: {
+      enabled: true,
+      review: 0,
+      reject: -1,
+      weight: 1
+    },
+    IMAGE_FORGERY_DETECTED: {
+      enabled: true,
+      review: 0,
+      reject: -1,
+      weight: 1
+    },
+    FEATURE_VERIFICATION_FAILED: {
+      enabled: true,
+      review: 0,
+      reject: -1,
+      weight: 1
+    },
+    IMAGE_EDITED: {
+      enabled: true,
+      review: 0,
+      reject: -1,
+      weight: 1
+    },
+    AML_SANCTION: {
+      enabled: true,
+      review: 0,
+      reject: -1,
+      weight: 1
+    },
+    AML_CRIME: {
+      enabled: true,
+      review: 0,
+      reject: -1,
+      weight: 1
+    },
+    AML_PEP: {
+      enabled: true,
+      review: 0,
+      reject: -1,
+      weight: 1
+    },
+    LOW_TEXT_CONFIDENCE: {
+      enabled: true,
+      review: -1,
+      reject: -1,
+      weight: 1
+    },
+    FAKE_ID_DETECTED: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    ARTIFICIAL_IMAGE: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    ARTIFICIAL_TEXT: {
+      enabled: true,
+      review: -1,
+      reject: 0,
+      weight: 1
+    },
+    TEXT_FORGERY_DETECTED: {
+      enabled: true,
+      review: 0,
+      reject: -1,
+      weight: 1
+    },
+    IP_COUNTRY_MISMATCH: {
+      enabled: true,
+      review: -1,
+      reject: -1,
+      weight: 1
+    },
+    UNKNOWN: {
+      enabled: true,
+      review: -1,
+      reject: -1
+    }
+  });
 
   const item = {
     basic: [
@@ -598,373 +609,373 @@ const BlankPage = () => {
     ],
     decisions:[
       {
-        "id": 1,
+        "key": 1,
         "name": "UNRECOGNIZED_DOCUMENT",
         "label": "Unrecognized Document",
-        "tooltip": "",
+        "tooltip": "test",
       },
       {
-        "id": 2,
+        "key": 2,
         "name": "UNRECOGNIZED_BACK_DOCUMENT",
         "label": "Unrecognized Back Document",
-        "tooltip": "",
+        "tooltip": "test",
       },
       {
-        "id": 3,
+        "key": 3,
         "name": "UNRECOGNIZED_BACK_BARCODE",
         "label": "Unrecognized Back Barcode",
         "tooltip": "",
       },
       {
-        "id": 4,
+        "key": 4,
         "name": "INVALID_BACK_DOCUMENT",
         "label": "Invalid Back Document",
         "tooltip": "",
       },
       {
-        "id": 5,
+        "key": 5,
         "name": "SELFIE_FACE_NOT_FOUND",
         "label": "Selfie Face Not Found",
         "tooltip": "",
       },
       {
-        "id": 6,
+        "key": 6,
         "name": "SELFIE_MULTIPLE_FACES",
         "label": "Selfie multiple Faces",
         "tooltip": "",
       },
       {
-        "id": 7,
+        "key": 7,
         "name": "DOCUMENT_FACE_NOT_FOUND",
         "label": "Document Face Not Found",
         "tooltip": "",
       },
       {
-        "id": 8,
+        "key": 8,
         "name": "DOCUMENT_FACE_LANDMARK_ERR",
         "label": "Document Face Landmark Error",
         "tooltip": "",
       },
       {
-        "id": 9,
+        "key": 9,
         "name": "SELFIE_FACE_LANDMARK_ERR",
         "label": "Selfie Face Landmark Error",
         "tooltip": "",
       },
       {
-        "id": 10,
+        "key": 10,
         "name": "INTERNAL_FACE_VERIFICATION_ERR",
         "label": "Internal Face Verification Error",
         "tooltip": "",
       },
       {
-        "id": 11,
+        "key": 11,
         "name": "FACE_MISMATCH",
         "label": "Face Mismatch",
         "tooltip": "",
       },
       {
-        "id": 12,
+        "key": 12,
         "name": "FACE_IDENTICAL",
         "label": "Face Identical",
         "tooltip": "",
       },
       {
-        "id": 13,
+        "key": 13,
         "name": "DOCUMENT_COUNTRY_MISMATCH",
         "label": "Document Country Mismatch",
         "tooltip": "",
       },
       {
-        "id": 14,
+        "key": 14,
         "name": "DOCUMENT_STATE_MISMATCH",
         "label": "Document State Mismatch",
         "tooltip": "",
       },
       {
-        "id": 15,
+        "key": 15,
         "name": "DOCUMENT_NAME_MISMATCH",
         "label": "Document Name Mismatch",
         "tooltip": "",
       },
       {
-        "id": 16,
+        "key": 16,
         "name": "DOCUMENT_DOB_MISMATCH",
         "label": "Document DOB Mismatch",
         "tooltip": "",
       },
       {
-        "id": 17,
+        "key": 17,
         "name": "MISSING_EXPIRY_DATE",
         "label": "Missing Expiry Date",
         "tooltip": "",
       },
       {
-        "id": 18,
+        "key": 18,
         "name": "MISSING_ISSUE_DATE",
         "label": "Missing Issue Date",
         "tooltip": "",
       },
       {
-        "id": 19,
+        "key": 19,
         "name": "MISSING_BIRTH_DATE",
         "label": "Missing Birth Date",
         "tooltip": "",
       },
       {
-        "id": 20,
+        "key": 20,
         "name": "MISSING_DOCUMENT_NUMBER",
         "label": "Missing Document number",
         "tooltip": "",
       },
       {
-        "id": 21,
+        "key": 21,
         "name": "MISSING_PERSONAL_NUMBER",
         "label": "Missing Personal Number",
         "tooltip": "",
       },
       {
-        "id": 22,
+        "key": 22,
         "name": "MISSING_ADDRESS",
         "label": "Missing Address",
         "tooltip": "",
       },
       {
-        "id": 23,
+        "key": 23,
         "name": "MISSING_POSTCODE",
         "label": "Missing Postcode",
         "tooltip": "",
       },
       {
-        "id": 24,
+        "key": 24,
         "name": "MISSING_NAME",
         "label": "Missing Name",
         "tooltip": "",
       },
       {
-        "id": 25,
+        "key": 25,
         "name": "MISSING_LOCAL_NAME",
         "label": "Missing Local Name",
         "tooltip": "",
       },
       {
-        "id": 26,
+        "key": 26,
         "name": "MISSING_GENDER",
         "label": "Missing Gender",
         "tooltip": "",
       },
       {
-        "id": 27,
+        "key": 27,
         "name": "MISSING_HEIGHT",
         "label": "Missing Height",
         "tooltip": "",
       },
       {
-        "id": 28,
+        "key": 28,
         "name": "MISSING_WEIGHT",
         "label": "Missing Weight",
         "tooltip": "",
       },
       {
-        "id": 29,
+        "key": 29,
         "name": "MISSING_HAIR_COLOR",
         "label": "Missing Hair Color",
         "tooltip": "",
       },
       {
-        "id": 30,
+        "key": 30,
         "name": "MISSING_EYE_COLOR",
         "label": "Missing Eye Color",
         "tooltip": "",
       },
       {
-        "id": 31,
+        "key": 31,
         "name": "MISSING_RESTRICTIONS",
         "label": "Missing Restrictions",
         "tooltip": "",
       },
       {
-        "id": 32,
+        "key": 32,
         "name": "MISSING_VEHICLE_CLASS",
         "label": "Missing Vehicle Class",
         "tooltip": "",
       },
       {
-        "id": 33,
+        "key": 33,
         "name": "MISSING_ENDORSEMENT",
         "label": "Missing Endorsement",
         "tooltip": "",
       },
       {
-        "id": 34,
+        "key": 34,
         "name": "UNDER_18",
         "label": "Under 18",
         "tooltip": "",
       },
       {
-        "id": 35,
+        "key": 35,
         "name": "UNDER_19",
         "label": "Under 19",
         "tooltip": "",
       },
       {
-        "id": 36,
+        "key": 36,
         "name": "UNDER_20",
         "label": "Under 20",
         "tooltip": "",
       },
       {
-        "id": 37,
+        "key": 37,
         "name": "UNDER_21",
         "label": "Under 21",
         "tooltip": "",
       },
       {
-        "id": 38,
+        "key": 38,
         "name": "DOCUMENT_EXPIRED",
         "label": "Document Expired",
         "tooltip": "",
       },
       {
-        "id": 39,
+        "key": 39,
         "name": "NAME_VERIFICATION_FAILED",
         "label": "Name Verification Failed",
         "tooltip": "",
       },
       {
-        "id": 40,
+        "key": 40,
         "name": "DOB_VERIFICATION_FAILED",
         "label": "DOB Verification Failed",
         "tooltip": "",
       },
       {
-        "id": 41,
+        "key": 41,
         "name": "AGE_VERIFICATION_FAILED",
         "label": "Age Verification Failed",
         "tooltip": "",
       },
       {
-        "id": 42,
+        "key": 42,
         "name": "ID_NUMBER_VERIFICATION_FAILED",
         "label": "ID Number Verification Failed",
         "tooltip": "",
       },
       {
-        "id": 43,
+        "key": 43,
         "name": "ADDRESS_VERIFICATION_FAILED",
         "label": "Address Verification Failed",
         "tooltip": "",
       },
       {
-        "id": 44,
+        "key": 44,
         "name": "POSTCODE_VERIFICATION_FAILED",
         "label": "Postcode Verification Failed",
         "tooltip": "",
       },
       {
-        "id": 45,
+        "key": 45,
         "name": "TYPE_NOT_ACCEPTED",
         "label": "Type Not Accepted",
         "tooltip": "",
       },
       {
-        "id": 46,
+        "key": 46,
         "name": "COUNTRY_NOT_ACCEPTED",
         "label": "Country Not Accepted",
         "tooltip": "",
       },
       {
-        "id": 47,
+        "key": 47,
         "name": "STATE_NOT_ACCEPTED",
         "label": "State Not Accepted",
         "tooltip": "",
       },
       {
-        "id": 48,
+        "key": 48,
         "name": "RECAPTURED_DOCUMENT",
         "label": "Recaptured Document",
         "tooltip": "",
       },
       {
-        "id": 49,
+        "key": 49,
         "name": "SCREEN_DETECTED",
         "label": "Screen Detected",
         "tooltip": "",
       },
       {
-        "id": 50,
+        "key": 50,
         "name": "IMAGE_FORGERY_DETECTED",
         "label": "Image Forgery Detected",
         "tooltip": "",
       },
       {
-        "id": 51,
+        "key": 51,
         "name": "FEATURE_VERIFICATION_FAILED",
         "label": "Feature Verification Failed",
         "tooltip": "",
       },
       {
-        "id": 52,
+        "key": 52,
         "name": "IMAGE_EDITED",
         "label": "Image Edited",
         "tooltip": "",
       },
       {
-        "id": 53,
+        "key": 53,
         "name": "AML_SANCTION",
         "label": "AML Sanction",
         "tooltip": "",
       },
       {
-        "id": 54,
+        "key": 54,
         "name": "AML_CRIME",
         "label": "AML Crime",
         "tooltip": "",
       },
       {
-        "id": 55,
+        "key": 55,
         "name": "AML_PEP",
         "label": "AML PEP",
         "tooltip": "",
       },
       {
-        "id": 56,
+        "key": 56,
         "name": "LOW_TEXT_CONFIDENCE",
         "label": "Low Text Confidence",
         "tooltip": "",
       },
       {
-        "id": 57,
+        "key": 57,
         "name": "FAKE_ID_DETECTED",
         "label": "Fake ID Detected",
         "tooltip": "",
       },
       {
-        "id": 58,
+        "key": 58,
         "name": "ARTIFICIAL_IMAGE",
         "label": "Artificial Image",
         "tooltip": "",
       },
       {
-        "id": 59,
+        "key": 59,
         "name": "ARTIFICIAL_TEXT",
         "label": "Artificial Text",
         "tooltip": "",
       },
       {
-        "id": 60,
+        "key": 60,
         "name": "TEXT_FORGERY_DETECTED",
         "label": "Text Forgery Detected",
         "tooltip": "",
       },
       {
-        "id": 61,
+        "key": 61,
         "name": "IP_COUNTRY_MISMATCH",
         "label": "IP Country Mismatch",
         "tooltip": "",
       },
       {
-        "id": 62,
+        "key": 62,
         "name": "UNKNOWN",
         "label": "Unknown",
         "tooltip": "",
@@ -973,7 +984,7 @@ const BlankPage = () => {
   };
 
   const OPTIONS = ['documentNumber', 'face', 'hairColor', 'eyeColor', 'dob', 'address1', 'address2'];
-  const filteredOptions = OPTIONS.filter(o => !state.obscure.includes(o));
+  const filteredOptions = OPTIONS.filter(o => state.obscure? (!state.obscure.includes(o)):null);
 
   const onChange = name => value => {
     console.log("Before=>", name, state[name]);
@@ -982,15 +993,112 @@ const BlankPage = () => {
       ...state, 
       [name]: value 
     });
+    console.log("After=>",  state[name]);
+  };
+
+  // table data
+  const tableData = [];
+  item.decisions.forEach(i => {
+    tableData.push({
+      key: i.key,
+      enabled: decisions[i.name].enabled,
+      name: i.name,
+      label: i.label,
+      tooltip: i.tooltip,
+      review: (<Slider marks={decisionsMark} defaultValue={decisions[i.name].review} min={-1} max={1} step={0.01} />),
+      reject: (<Slider marks={decisionsMark} defaultValue={decisions[i.name].reject} min={-1} max={1} step={0.01} />),
+      weight: (<InputNumber defaultValue={decisions[i.name].weight} min={0} max={1} step={0.01} />)
+    })
+  });
+
+  // table state
+  const [table, setTable] = useState({
+    selectedRowKeys: tableData.filter(item => item.enabled).map(item => item.key),
+    selectedRows: tableData.filter(item => item.enabled).map(item => item),
+    values: {},
+  });
+
+  // table title
+  const columns = [
+    {
+      title: 'Code',
+      dataIndex: 'label',
+      key: 'code',
+      width: '30%',
+      render: code => (
+        <Tooltip placement="topLeft" title={item.decisions[item.decisions.map((item) => { return item.label }).indexOf(code)].tooltip}>
+          {code}
+        </Tooltip> 
+      ),
+    },
+    {
+      title: 'Review',
+      dataIndex: 'review',
+      key: 'review',
+      width: '30%'
+    },
+    {
+      title: 'Reject',
+      dataIndex: 'reject',
+      key: 'reject',
+      width: '30%'
+    },
+    {
+      title: 'Weight',
+      dataIndex: 'weight',
+      key: 'weight',
+      width: '10%'
+    }
+  ];
+
+  // 嘗試將state變更
+  // useEffect(() => {
+  //   if (table.selectedRows.length > 0) {
+  //     const initialState = table.selectedRows.map(obj => obj.name);
+  //     console.log("useEffect", initialState);
+  //     initialState.forEach(item => {
+  //       setDecisions({
+  //         ...decisions[item],
+  //         enabled: true
+  //       })
+  //     })
+  //   }
+  // }, [table.selectedRows]);
+
+  // table checkbox 連動
+  const { selectedRowKeys } = table;
+  const rowSelection = {
+    selectedRowKeys, // default checked
+    onChange: (selectedRowKeys, selectedRows) => {
+      setTable({ ...table, selectedRowKeys, selectedRows });
+      // setState({...decisions})
+      // console.log(table.selectedRowKeys);
+      // console.log(decisions);
+
+      // table.selectedRows.forEach((item, index) => {
+      //   // console.log('item', item.name, "index=>", index);
+      //   // console.log(decisions[item.name].enabled);
+      //   // const hi = decisions[item.name];
+      //   // console.log(hi);
+      //   oldData[item.name].enabled = !decisions[item.name].enabled;
+      //   setDecisions(oldData);
+      // })
+      // console.log(decisions);
+    },
+    getCheckboxProps: record => ({
+      disabled: record.name === null, // Column configuration not to be checked
+      name: record.name,
+    }),
+    
   };
 
   // const handleOpen = name => value => {
-  //   console.log("Before=>", name, state.decisions[name].enabled);
+  //   console.log("Before=>", name, decisions[name].enabled);
   //   console.log(value);
-  //   // const lists = [...state.decisions];
+  //   // const lists = [...decisions];
   //   // console.log(lists);
   //   setState({ 
-  //     ...state.decisions["UNRECOGNIZED_DOCUMENT"], 
+  //     ...decisions["UNRECOGNIZED_DOCUMENT"], 
   //     enabled: value
   //   });
   // };
@@ -1011,7 +1119,7 @@ const BlankPage = () => {
                     return(
                       (u.type == "input")?
                       <Form.Item label={u.label} name={u.name} initialValue={state[u.name]} tooltip={u.tooltip}>
-                        <Input placeholder={u.placeholder} />
+                          <Input placeholder={u.placeholder} onChange={onChange(u.name)}/>
                       </Form.Item>
                       :
                       (u.type == "pick")?
@@ -1094,47 +1202,24 @@ const BlankPage = () => {
                 </Cards>
               </Col>
               <Col md={24} sm={24} xs={24}>
-                 <Cards title="Decisions">
-                 <Row gutter="25">
-                  {
-                    item['decisions'].map((u,i) => {
-                      return(
-                        <Col xxl={8} md={12} className="mb-25">
-                          <CardStyleWrapper>
-                            <Cards headless border size="default" key={i}>
-                                <Form.Item label={u.label} name={u.name}>
-                                  <Switch autoFocus size="large" defaultChecked={state.decisions[u.name].enabled} />
-                                </Form.Item>
-                                <Row gutter={30}>
-                                  <Col sm={8} xs={24} className="mb-25">
-                                    <Form.Item label="Review" name="review" initialValue={state.decisions[u.name].review}>
-                                      <InputNumber style={{ width: '100%' }}  min={-1} max={1} step={0.01}/>
-                                    </Form.Item>
-                                  </Col>
-                                  <Col sm={8} xs={24} className="mb-25">
-                                    <Form.Item label="Reject" name="reject">
-                                      <InputNumber style={{ width: '100%' }} defaultValue={state.decisions[u.name].reject} min={-1} max={1} step={0.01}/>
-                                    </Form.Item>
-                                  </Col>
-                                  <Col sm={8} xs={24} className="mb-25">
-                                    <Form.Item label="Weight" name="weight">
-                                      <InputNumber style={{ width: '100%' }} defaultValue={state.decisions[u.name].weight} min={0} max={1} step={0.01}/>
-                                    </Form.Item>
-                                  </Col>
-                                </Row>
-                            </Cards>
-                          </CardStyleWrapper>
-                        </Col>
-                        )
-                      })
-                  }
-                   
-                  </Row>
+                <Cards title="Selection">
+                  <div>
+                    <Table
+                      className="table-responsive"
+                      rowSelection={{
+                        type: 'checkbox',
+                        ...rowSelection,
+                      }}
+                      dataSource={tableData}
+                      columns={columns}
+                      pagination={false}
+                      scroll={{ x: 1500 }}
+                    />
+                  </div>
                 </Cards>
               </Col>
             </Row>
           </Form>
-  
       </Main>
     </>
   );
