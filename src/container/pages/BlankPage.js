@@ -26,11 +26,11 @@ const marks = {
 };
 // Decision Slider Mark
 const decisionsMark = {
-  "-1": {
+  "-0.1": {
     style: {
       color: '#f50',
     },
-    label: <strong>-1</strong>
+    label: <strong>close</strong>
   },
   0: '0',
   0.5: '0.5',
@@ -40,8 +40,10 @@ const decisionsMark = {
 
 
 
-
 const BlankPage = () => {
+
+
+
 
   const [state, setState] = useState({
     canvasSize: 1800,
@@ -594,53 +596,44 @@ const BlankPage = () => {
   const filteredOptions = OPTIONS.filter(o => state.obscure ? (!state.obscure.includes(o)) : null);
 
   const onChange = name => value => {
-    console.log("Before=>", name, state[name]);
-    console.log(value);
+
     setState({
       ...state,
       [name]: value
     });
-    console.log("After=>", state[name]);
+
   };
-
-  const sliderChange = (val, obj) => {
-
-  }
-
-
-  console.log("decisions =>", decisions)
-
   // table data
   const tableData = [];
   item.decisions.forEach(i => {
-    // console.log("decisions => ", decisions[i.name])
+
     tableData.push({
       key: i.key,
-      enabled: (<Checkbox defaultChecked={decisions[i.name].enabled} />),
+      enabled: (<Checkbox defaultChecked={decisions[i.name].enabled}
+        onChange={() => {
+          let upgrade = decisions
+          upgrade[i.name].enabled = !upgrade[i.name].enabled
+          setDecisions(upgrade)
+        }} />),
       name: i.name,
       label: i.label,
       tooltip: i.tooltip,
-      review: (<Slider marks={decisionsMark} defaultValue={decisions[i.name].review} min={-1} max={1} step={0.01}
-        onChange={(val) => {
+      review: (<Slider marks={decisionsMark} defaultValue={decisions[i.name].review} min={-0.1} max={1} step={0.01}
+        onAfterChange={(val) => {
           let upgrade = decisions
-          // upgrade[i.name]= {...val}
-          // upgrade[i.name][review] = val
           upgrade[i.name].review = val
-          console.log(upgrade[i.name])
           setDecisions(upgrade)
         }} />),
-      reject: (<Slider marks={decisionsMark} defaultValue={decisions[i.name].reject} min={-1} max={1} step={0.01}
-        onChange={(val) => {
+      reject: (<Slider marks={decisionsMark} defaultValue={decisions[i.name].reject} min={-0.1} max={1} step={0.01}
+        onAfterChange={(val) => {
           let upgrade = decisions
           upgrade[i.name].reject = val
-          console.log(upgrade[i.name])
           setDecisions(upgrade)
         }} />),
       weight: (<InputNumber defaultValue={decisions[i.name].weight} min={0} max={1} step={0.01}
-        onChange={(val) => {
+        onAfterChange={(val) => {
           let upgrade = decisions
           upgrade[i.name].weight = val
-          console.log(upgrade[i.name])
           setDecisions(upgrade)
         }} />)
     })
@@ -656,15 +649,21 @@ const BlankPage = () => {
   // table title
   const columns = [
     {
+      title: 'Enabled',
+      dataIndex: 'enabled',
+      key: 'enabled',
+      width: '10%',
+    },
+    {
       title: 'Code',
       dataIndex: 'label',
       key: 'code',
       width: '30%',
-      // render: code => (
-      //   <Tooltip placement="topLeft" title={item.decisions[item.decisions.map((item) => { return item.label }).indexOf(code)].tooltip}>
-      //     {code}
-      //   </Tooltip>
-      // ),
+      render: code => (
+        <Tooltip placement="topLeft" title={item.decisions[item.decisions.map((item) => { return item.label }).indexOf(code)].tooltip}>
+          {code}
+        </Tooltip>
+      ),
     },
     {
       title: 'Review',
@@ -687,27 +686,12 @@ const BlankPage = () => {
   ];
 
   const { selectedRowKeys } = table;
-  const rowSelection = {
-    selectedRowKeys, // default checked
-    onChange: (res) => {
-      // console.log(selectedRowKeys, selectedRows)
-      // console.log(table)
-      console.log(res)
-      // setTable({ ...table, selectedRowKeys, selectedRows });
 
-    },
-    getCheckboxProps: record =>
-    (
 
-      {
-        disabled: record.name === null, // Column configuration not to be checked
-        name: record.name,
-      }
 
-    )
 
-  };
-
+  console.log("state => ", state)
+  console.log("decisions => ", decisions)
 
   return (
     <>
@@ -775,7 +759,13 @@ const BlankPage = () => {
                       return (
                         <Col sm={12} xs={24} className="mb-25">
                           <Form.Item label={u.label} name={u.name} initialValue={state.decisionTrigger[u.name]} tooltip={u.tooltip}>
-                            <Input placeholder={u.placeholder} />
+                            <Input placeholder={u.placeholder}
+                              onChange={(e) => {
+                                let upgrade = state
+                                upgrade['decisionTrigger'][u.name] = e.target.value
+                                setState(upgrade)
+
+                              }} />
                           </Form.Item>
                         </Col>
                       )
@@ -799,7 +789,13 @@ const BlankPage = () => {
                     return (
                       <Form.Item name={u.name}>
                         <h3>{u.label}</h3>
-                        <Slider marks={marks} defaultValue={state.thresholds[u.name]} min={0} max={1} step={0.1} />
+                        <Slider marks={marks} defaultValue={state.thresholds[u.name]} min={0} max={1} step={0.1}
+                          onAfterChange={(val) => {
+                            let upgrade = state
+                            upgrade['thresholds'][u.name] = val
+                            setState(upgrade)
+
+                          }} />
                       </Form.Item>
                     )
                   })
