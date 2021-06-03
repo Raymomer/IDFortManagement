@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from "../../components/axios";
-import { Row, Col, Form, Input, Select, Switch, Table, Tooltip, InputNumber } from 'antd';
+// import axios from "../../components/axios";
+import { Row, Col, Form, Input, Select, Switch, Table, Tooltip, InputNumber, Checkbox } from 'antd';
 import FeatherIcon from 'feather-icons-react';
 import { PageHeader } from '../../components/page-headers/page-headers';
 import { Main } from '../styled';
@@ -9,6 +9,8 @@ import { Popover } from '../../components/popup/popup';
 import { Button } from '../../components/buttons/buttons';
 import { Slider } from '../../components/slider/slider';
 
+
+import DEFAULT from '../../demoData/default.json'
 
 const { Option } = Select;
 // Slider Mark
@@ -35,35 +37,12 @@ const decisionsMark = {
   1: '1'
 };
 
-// const getUserData = async () => {
-//     let down = new Promise((resolve, reject) => {
-//       axios.get('https://mocki.io/v1/b56899dd-8da2-4e4b-b033-7e3d24498ff4')
-//           .then(res => resolve(res.data))
-//           .catch(err => reject(err));
-//     });
-
-//     return await down
-//   }
-
-// let test;
-// getUserData().then(res => {
-//   // console.log(res);
-//   test = { res }; 
-// })
 
 
-// b56899dd-8da2-4e4b-b033-7e3d24498ff4
 
 
 const BlankPage = () => {
 
-  // const [state, setState] = useState(test);
-  // console.log(state);
-  // const [data, setData] = useState(temp);
-  // console.log("After2=>", data);
-  // const [state, setState] = useState(data);
-  
-  // getProfile
   const [state, setState] = useState({
     canvasSize: 1800,
     orientationCorrection: true,
@@ -73,9 +52,9 @@ const BlankPage = () => {
     outputType: "base64",
     crop: true,
     outputSize: 800,
-    obscure: ["documentNumber","face","hairColor","eyeColor"],
-    thresholds: { 
-      face: 0.5, 
+    obscure: ["documentNumber", "face", "hairColor", "eyeColor"],
+    thresholds: {
+      face: 0.5,
       nameDualSide: 0.5,
       nameVerification: 0.7,
       addressVerification: 0.9,
@@ -93,380 +72,8 @@ const BlankPage = () => {
       reject: 1
     }
   });
-  
-  const [decisions, setDecisions] = useState({
-    UNRECOGNIZED_DOCUMENT: {
-      enabled: false,
-      review: -1,
-      reject: 0.5,
-      weight: 1
-    },
-    UNRECOGNIZED_BACK_DOCUMENT: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    UNRECOGNIZED_BACK_BARCODE: {
-      enabled: true,
-      review: -1,
-      reject: -1,
-      weight: 1
-    },
-    INVALID_BACK_DOCUMENT: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    SELFIE_FACE_NOT_FOUND: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    SELFIE_MULTIPLE_FACES: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    DOCUMENT_FACE_NOT_FOUND: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    DOCUMENT_FACE_LANDMARK_ERR: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    SELFIE_FACE_LANDMARK_ERR: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    INTERNAL_FACE_VERIFICATION_ERR: {
-      enabled: true,
-      review: 0,
-      reject: -1,
-      weight: 1
-    },
-    FACE_MISMATCH: {
-      enabled: true,
-      review: 0.45,
-      reject: 0.5,
-      weight: 1
-    },
-    FACE_IDENTICAL: {
-      enabled: true,
-      review: 0,
-      reject: -1,
-      weight: 1
-    },
-    DOCUMENT_COUNTRY_MISMATCH: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    DOCUMENT_STATE_MISMATCH: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    DOCUMENT_NAME_MISMATCH: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    DOCUMENT_DOB_MISMATCH: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    MISSING_EXPIRY_DATE: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    MISSING_ISSUE_DATE: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    MISSING_BIRTH_DATE: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    MISSING_DOCUMENT_NUMBER: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    MISSING_PERSONAL_NUMBER: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    MISSING_ADDRESS: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    MISSING_POSTCODE: {
-      enabled: true,
-      review: 0,
-      reject: -1,
-      weight: 1
-    },
-    MISSING_NAME: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    MISSING_LOCAL_NAME: {
-      enabled: true,
-      review: 0,
-      reject: -1,
-      weight: 1
-    },
-    MISSING_GENDER: {
-      enabled: true,
-      review: 0,
-      reject: -1,
-      weight: 1
-    },
-    MISSING_HEIGHT: {
-      enabled: true,
-      review: -1,
-      reject: -1,
-      weight: 1
-    },
-    MISSING_WEIGHT: {
-      enabled: true,
-      review: -1,
-      reject: -1,
-      weight: 1
-    },
-    MISSING_HAIR_COLOR: {
-      enabled: true,
-      review: -1,
-      reject: -1,
-      weight: 1
-    },
-    MISSING_EYE_COLOR: {
-      enabled: true,
-      review: -1,
-      reject: -1,
-      weight: 1
-    },
-    MISSING_RESTRICTIONS: {
-      enabled: true,
-      review: -1,
-      reject: -1,
-      weight: 1
-    },
-    MISSING_VEHICLE_CLASS: {
-      enabled: true,
-      review: -1,
-      reject: -1,
-      weight: 1
-    },
-    MISSING_ENDORSEMENT: {
-      enabled: true,
-      review: -1,
-      reject: -1,
-      weight: 1
-    },
-    UNDER_18: {
-      enabled: true,
-      review: -1,
-      reject: -1,
-      weight: 1
-    },
-    UNDER_19: {
-      enabled: true,
-      review: -1,
-      reject: -1,
-      weight: 1
-    },
-    UNDER_20: {
-      enabled: true,
-      review: -1,
-      reject: -1,
-      weight: 1
-    },
-    UNDER_21: {
-      enabled: true,
-      review: -1,
-      reject: -1,
-      weight: 1
-    },
-    DOCUMENT_EXPIRED: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    NAME_VERIFICATION_FAILED: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    DOB_VERIFICATION_FAILED: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    AGE_VERIFICATION_FAILED: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    ID_NUMBER_VERIFICATION_FAILED: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    ADDRESS_VERIFICATION_FAILED: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    POSTCODE_VERIFICATION_FAILED: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    TYPE_NOT_ACCEPTED: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    COUNTRY_NOT_ACCEPTED: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    STATE_NOT_ACCEPTED: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    RECAPTURED_DOCUMENT: {
-      enabled: true,
-      review: 0,
-      reject: -1,
-      weight: 1
-    },
-    SCREEN_DETECTED: {
-      enabled: true,
-      review: 0,
-      reject: -1,
-      weight: 1
-    },
-    IMAGE_FORGERY_DETECTED: {
-      enabled: true,
-      review: 0,
-      reject: -1,
-      weight: 1
-    },
-    FEATURE_VERIFICATION_FAILED: {
-      enabled: true,
-      review: 0,
-      reject: -1,
-      weight: 1
-    },
-    IMAGE_EDITED: {
-      enabled: true,
-      review: 0,
-      reject: -1,
-      weight: 1
-    },
-    AML_SANCTION: {
-      enabled: true,
-      review: 0,
-      reject: -1,
-      weight: 1
-    },
-    AML_CRIME: {
-      enabled: true,
-      review: 0,
-      reject: -1,
-      weight: 1
-    },
-    AML_PEP: {
-      enabled: true,
-      review: 0,
-      reject: -1,
-      weight: 1
-    },
-    LOW_TEXT_CONFIDENCE: {
-      enabled: true,
-      review: -1,
-      reject: -1,
-      weight: 1
-    },
-    FAKE_ID_DETECTED: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    ARTIFICIAL_IMAGE: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    ARTIFICIAL_TEXT: {
-      enabled: true,
-      review: -1,
-      reject: 0,
-      weight: 1
-    },
-    TEXT_FORGERY_DETECTED: {
-      enabled: true,
-      review: 0,
-      reject: -1,
-      weight: 1
-    },
-    IP_COUNTRY_MISMATCH: {
-      enabled: true,
-      review: -1,
-      reject: -1,
-      weight: 1
-    },
-    UNKNOWN: {
-      enabled: true,
-      review: -1,
-      reject: -1
-    }
-  });
+
+  const [decisions, setDecisions] = useState(DEFAULT.decisions);
 
   const item = {
     basic: [
@@ -529,7 +136,7 @@ const BlankPage = () => {
         "placeholder": "Obscure"
       },
     ],
-    thresholds:[
+    thresholds: [
       {
         "name": "face",
         "label": "Face",
@@ -591,7 +198,7 @@ const BlankPage = () => {
         "tooltip": "",
       }
     ],
-    decisionTrigger:[
+    decisionTrigger: [
       {
         "type": "input",
         "name": "review",
@@ -607,7 +214,7 @@ const BlankPage = () => {
         "placeholder": "Reject"
       }
     ],
-    decisions:[
+    decisions: [
       {
         "key": 1,
         "name": "UNRECOGNIZED_DOCUMENT",
@@ -984,37 +591,65 @@ const BlankPage = () => {
   };
 
   const OPTIONS = ['documentNumber', 'face', 'hairColor', 'eyeColor', 'dob', 'address1', 'address2'];
-  const filteredOptions = OPTIONS.filter(o => state.obscure? (!state.obscure.includes(o)):null);
+  const filteredOptions = OPTIONS.filter(o => state.obscure ? (!state.obscure.includes(o)) : null);
 
   const onChange = name => value => {
     console.log("Before=>", name, state[name]);
     console.log(value);
-    setState({ 
-      ...state, 
-      [name]: value 
+    setState({
+      ...state,
+      [name]: value
     });
-    console.log("After=>",  state[name]);
+    console.log("After=>", state[name]);
   };
+
+  const sliderChange = (val, obj) => {
+
+  }
+
+
+  console.log("decisions =>", decisions)
 
   // table data
   const tableData = [];
   item.decisions.forEach(i => {
+    // console.log("decisions => ", decisions[i.name])
     tableData.push({
       key: i.key,
-      enabled: decisions[i.name].enabled,
+      enabled: (<Checkbox defaultChecked={decisions[i.name].enabled} />),
       name: i.name,
       label: i.label,
       tooltip: i.tooltip,
-      review: (<Slider marks={decisionsMark} defaultValue={decisions[i.name].review} min={-1} max={1} step={0.01} />),
-      reject: (<Slider marks={decisionsMark} defaultValue={decisions[i.name].reject} min={-1} max={1} step={0.01} />),
-      weight: (<InputNumber defaultValue={decisions[i.name].weight} min={0} max={1} step={0.01} />)
+      review: (<Slider marks={decisionsMark} defaultValue={decisions[i.name].review} min={-1} max={1} step={0.01}
+        onChange={(val) => {
+          let upgrade = decisions
+          // upgrade[i.name]= {...val}
+          // upgrade[i.name][review] = val
+          upgrade[i.name].review = val
+          console.log(upgrade[i.name])
+          setDecisions(upgrade)
+        }} />),
+      reject: (<Slider marks={decisionsMark} defaultValue={decisions[i.name].reject} min={-1} max={1} step={0.01}
+        onChange={(val) => {
+          let upgrade = decisions
+          upgrade[i.name].reject = val
+          console.log(upgrade[i.name])
+          setDecisions(upgrade)
+        }} />),
+      weight: (<InputNumber defaultValue={decisions[i.name].weight} min={0} max={1} step={0.01}
+        onChange={(val) => {
+          let upgrade = decisions
+          upgrade[i.name].weight = val
+          console.log(upgrade[i.name])
+          setDecisions(upgrade)
+        }} />)
     })
   });
 
   // table state
   const [table, setTable] = useState({
-    selectedRowKeys: tableData.filter(item => item.enabled).map(item => item.key),
-    selectedRows: tableData.filter(item => item.enabled).map(item => item),
+    selectedRowKeys: tableData.map(item => item.key),
+    selectedRows: tableData.map(item => item),
     values: {},
   });
 
@@ -1025,11 +660,11 @@ const BlankPage = () => {
       dataIndex: 'label',
       key: 'code',
       width: '30%',
-      render: code => (
-        <Tooltip placement="topLeft" title={item.decisions[item.decisions.map((item) => { return item.label }).indexOf(code)].tooltip}>
-          {code}
-        </Tooltip> 
-      ),
+      // render: code => (
+      //   <Tooltip placement="topLeft" title={item.decisions[item.decisions.map((item) => { return item.label }).indexOf(code)].tooltip}>
+      //     {code}
+      //   </Tooltip>
+      // ),
     },
     {
       title: 'Review',
@@ -1051,57 +686,27 @@ const BlankPage = () => {
     }
   ];
 
-  // 嘗試將state變更
-  // useEffect(() => {
-  //   if (table.selectedRows.length > 0) {
-  //     const initialState = table.selectedRows.map(obj => obj.name);
-  //     console.log("useEffect", initialState);
-  //     initialState.forEach(item => {
-  //       setDecisions({
-  //         ...decisions[item],
-  //         enabled: true
-  //       })
-  //     })
-  //   }
-  // }, [table.selectedRows]);
-
-  // table checkbox 連動
   const { selectedRowKeys } = table;
   const rowSelection = {
     selectedRowKeys, // default checked
-    onChange: (selectedRowKeys, selectedRows) => {
-      setTable({ ...table, selectedRowKeys, selectedRows });
-      // setState({...decisions})
-      // console.log(table.selectedRowKeys);
-      // console.log(decisions);
+    onChange: (res) => {
+      // console.log(selectedRowKeys, selectedRows)
+      // console.log(table)
+      console.log(res)
+      // setTable({ ...table, selectedRowKeys, selectedRows });
 
-      // table.selectedRows.forEach((item, index) => {
-      //   // console.log('item', item.name, "index=>", index);
-      //   // console.log(decisions[item.name].enabled);
-      //   // const hi = decisions[item.name];
-      //   // console.log(hi);
-      //   oldData[item.name].enabled = !decisions[item.name].enabled;
-      //   setDecisions(oldData);
-      // })
-      // console.log(decisions);
     },
-    getCheckboxProps: record => ({
-      disabled: record.name === null, // Column configuration not to be checked
-      name: record.name,
-    }),
-    
-  };
+    getCheckboxProps: record =>
+    (
 
-  // const handleOpen = name => value => {
-  //   console.log("Before=>", name, decisions[name].enabled);
-  //   console.log(value);
-  //   // const lists = [...decisions];
-  //   // console.log(lists);
-  //   setState({ 
-  //     ...decisions["UNRECOGNIZED_DOCUMENT"], 
-  //     enabled: value
-  //   });
-  // };
+      {
+        disabled: record.name === null, // Column configuration not to be checked
+        name: record.name,
+      }
+
+    )
+
+  };
 
 
   return (
@@ -1110,116 +715,112 @@ const BlankPage = () => {
         title="Create Profile"
       />
       <Main>
-          <Form name="horizontal-form" layout="vertical">
-            <Row gutter={25}>
-              <Col md={12} sm={12} xs={24}>
-                <Cards title="Basic">
-                  {
-                  item['basic'].map((u,i) => {
-                    return(
-                      (u.type == "input")?
-                      <Form.Item label={u.label} name={u.name} initialValue={state[u.name]} tooltip={u.tooltip}>
-                          <Input placeholder={u.placeholder} onChange={onChange(u.name)}/>
-                      </Form.Item>
-                      :
-                      (u.type == "pick")?
-                      <Form.Item label={u.label} name={u.name} initialValue={state[u.name]} tooltip={u.tooltip}>
-                        <Select size="large" className="sDash_fullwidth-select">
-                          <Option value="base64">Base 64</Option>
-                          <Option value="url">URL</Option>
-                        </Select>
-                      </Form.Item>:
-                      (u.type == "multi-pick")?
-                      <Form.Item name={u.name} initialValue={state[u.name]} label={u.label} tooltip={u.tooltip}>
-                        <Select
-                          mode="multiple"
-                          placeholder={u.placeholder}
-                          value={state[u.name]}
-                          onChange={onChange(u.name)}
-                          style={{ width: '100%' }}
-                        >
-                          {filteredOptions.map(item => (
-                            <Select.Option key={item} value={item}>
-                              {item}
-                            </Select.Option>
-                          ))}
-                        </Select>
-                      </Form.Item>:
-                      (u.type == "switch")?
-                        <Form.Item label={u.label} name={u.name} tooltip={u.tooltip}>
-                          <Switch autoFocus size="large" defaultChecked={state[u.name]} onChange={onChange(u.name)} />
+        <Form name="horizontal-form" layout="vertical">
+          <Row gutter={25}>
+            <Col md={12} sm={12} xs={24}>
+              <Cards title="Basic">
+                {
+                  item['basic'].map((u, i) => {
+                    return (
+                      (u.type == "input") ?
+                        <Form.Item label={u.label} name={u.name} initialValue={state[u.name]} tooltip={u.tooltip}>
+                          <Input placeholder={u.placeholder} onChange={onChange(u.name)} />
                         </Form.Item>
-                    :null
+                        :
+                        (u.type == "pick") ?
+                          <Form.Item label={u.label} name={u.name} initialValue={state[u.name]} tooltip={u.tooltip}>
+                            <Select size="large" className="sDash_fullwidth-select">
+                              <Option value="base64">Base 64</Option>
+                              <Option value="url">URL</Option>
+                            </Select>
+                          </Form.Item> :
+                          (u.type == "multi-pick") ?
+                            <Form.Item name={u.name} initialValue={state[u.name]} label={u.label} tooltip={u.tooltip}>
+                              <Select
+                                mode="multiple"
+                                placeholder={u.placeholder}
+                                value={state[u.name]}
+                                onChange={onChange(u.name)}
+                                style={{ width: '100%' }}
+                              >
+                                {filteredOptions.map(item => (
+                                  <Select.Option key={item} value={item}>
+                                    {item}
+                                  </Select.Option>
+                                ))}
+                              </Select>
+                            </Form.Item> :
+                            (u.type == "switch") ?
+                              <Form.Item label={u.label} name={u.name} tooltip={u.tooltip}>
+                                <Switch autoFocus size="large" defaultChecked={state[u.name]} onChange={onChange(u.name)} />
+                              </Form.Item>
+                              : null
                     )
-                    })
-                  }
-                </Cards>
-                <Cards 
-                  title="Decision Trigger"
-                  isbutton={(
-                    <Popover 
-                      placement="topRight"
-                      content="This score will determine whether it needs to be manually reviewed or rejected in the end.">
-                        <FeatherIcon icon="info" size={14} />
-                    </Popover>
-                    )}
-                >
-                  <Row gutter={30}>
+                  })
+                }
+              </Cards>
+              <Cards
+                title="Decision Trigger"
+                isbutton={(
+                  <Popover
+                    placement="topRight"
+                    content="This score will determine whether it needs to be manually reviewed or rejected in the end.">
+                    <FeatherIcon icon="info" size={14} />
+                  </Popover>
+                )}
+              >
+                <Row gutter={30}>
                   {
-                    item['decisionTrigger'].map((u,i) => {
-                      return(
+                    item['decisionTrigger'].map((u, i) => {
+                      return (
                         <Col sm={12} xs={24} className="mb-25">
                           <Form.Item label={u.label} name={u.name} initialValue={state.decisionTrigger[u.name]} tooltip={u.tooltip}>
                             <Input placeholder={u.placeholder} />
                           </Form.Item>
                         </Col>
-                        )
-                      })
+                      )
+                    })
                   }
-                  </Row>
-                </Cards>
-              </Col>
-              <Col md={12} sm={12} xs={24}>
-                <Cards 
+                </Row>
+              </Cards>
+            </Col>
+            <Col md={12} sm={12} xs={24}>
+              <Cards
                 title="Thresholds"
                 isbutton={(
-                  <Popover 
+                  <Popover
                     placement="topRight"
                     content="The score will be a float between 0 to 1. Strict condition will have a score closer to 1 while loose will have a score closer to 0.">
-                      <FeatherIcon icon="info" size={14} />
+                    <FeatherIcon icon="info" size={14} />
                   </Popover>
                 )}>
-                  {
-                    item['thresholds'].map((u,i) => {
-                      return(
-                        <Form.Item name={u.name}>
-                          <h3>{u.label}</h3>
-                          <Slider marks={marks} defaultValue={state.thresholds[u.name]} min={0} max={1} step={0.1}/>
-                        </Form.Item>
-                        )
-                      })
-                  }
-                </Cards>
-              </Col>
-              <Col md={24} sm={24} xs={24}>
-                <Cards title="Selection">
-                  <div>
-                    <Table
-                      className="table-responsive"
-                      rowSelection={{
-                        type: 'checkbox',
-                        ...rowSelection,
-                      }}
-                      dataSource={tableData}
-                      columns={columns}
-                      pagination={false}
-                      scroll={{ x: 1500 }}
-                    />
-                  </div>
-                </Cards>
-              </Col>
-            </Row>
-          </Form>
+                {
+                  item['thresholds'].map((u, i) => {
+                    return (
+                      <Form.Item name={u.name}>
+                        <h3>{u.label}</h3>
+                        <Slider marks={marks} defaultValue={state.thresholds[u.name]} min={0} max={1} step={0.1} />
+                      </Form.Item>
+                    )
+                  })
+                }
+              </Cards>
+            </Col>
+            <Col md={24} sm={24} xs={24}>
+              <Cards title="Selection">
+                <div>
+                  <Table
+                    className="table-responsive"
+                    dataSource={tableData}
+                    columns={columns}
+                    pagination={false}
+                    scroll={{ x: 1500 }}
+                  />
+                </div>
+              </Cards>
+            </Col>
+          </Row>
+        </Form>
       </Main>
     </>
   );
