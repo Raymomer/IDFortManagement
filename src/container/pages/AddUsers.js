@@ -36,6 +36,15 @@ const AddNew = ({ match }) => {
                           Multiple
                         </NavLink>
                       </li>
+                      <li style={{
+                        right: "3%",
+                        position: "absolute"
+                      }}>
+                        <NavLink to={`${match.path}/work`}>
+                          <FeatherIcon icon="briefcase" size={14} />
+                          result
+                        </NavLink>
+                      </li>
                     </ul>
                   </div>
                 }
