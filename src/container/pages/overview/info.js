@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
-import { Row, Col, Form, Input, Upload, Select, Progress, Tag } from 'antd';
+import { Row, Col, Form, Collapse, Table, Select, Progress, Carousel, Tooltip, message } from 'antd';
 import { Link } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
-import { BasicFormWrapper } from '../../styled';
+import { BasicFormWrapper, Main } from '../../styled';
 import { Button } from '../../../components/buttons/buttons';
-import Heading from '../../../components/heading/heading';
 import { ShowResponse, TestimonialStyleWrapper } from '../style';
 import { Modal } from '../../../components/modals/antd-modals';
 import { Cards } from '../../../components/cards/frame/cards-frame';
+
 
 import DEFAULT from '../../../demoData/default.json'
 
 
 
 import SwiperCore, { Navigation, Pagination } from 'swiper';
-import Swiper from 'react-id-swiper';
 import axios from 'axios'
 import FileSaver, { saveAs } from 'file-saver'
 
@@ -36,19 +35,161 @@ const paramsThree = {
 
 
 const { Option } = Select;
+const supported_fields = ["documentNumber", "personalNumber", "firstName", "middleName", "lastName", "fullName", "firstName_local", "middleName_local", "lastName_local", "fullName_local", "dob", "expiry", "issued", "sex", "height", "weight", "address1", "address2", "postcode", "placeOfBirth", "documentType", "documentName", "vehicleClass", "restrictions", "issueAuthority", "issuerOrg_region_full", "issuerOrg_region_abbr", "issuerOrg_iso2", "nationality_iso2", "optionalData", "optionalData2", "customdata1", "customdata2", "customdata3", "customdata4", "customdata5", "trustlevel", "trustnote", "docupass_reference", "image", "imagehash", "documentNumber_formatted", "updatetime", "createtime"];
+
+
+const { Panel } = Collapse;
+
 const Info = () => {
 
-  const ImageList = ({ title }) => {
 
-    console.log(Object(state.result.outputImage))
+
+  const getDataSource = () => {
+    console.log("getDataSource")
+    console.log(state)
+
+    let source = []
+    Object.keys(state.result.data).map(parameters => {
+      state.result.data[parameters].filter(i => i.index == 0).map(res => {
+        if (supported_fields.includes(parameters)) {
+          source.push(
+            {
+              "parameters": parameters,
+              "value": [res.value, res.confidence]
+            }
+          );
+        }
+
+      })
+    })
+
+    return source
+
+  }
+
+
+  const docColums = [
+    {
+      title: 'Parameters',
+      dataIndex: 'parameters',
+      key: 'parameters',
+      render: (ele) => {
+        return (
+          <div style={{ display: "-webkit-inline-box" }}>
+            <span style={{ fontWeight: 800 }}>{ele}</span>
+          </div>
+        )
+      }
+    },
+    {
+      title: 'Value',
+      dataIndex: 'value',
+      key: 'value',
+      render: ([value, confidence]) => {
+        return (
+          <div style={{ display: "-webkit-inline-box" }}>
+            <span>{value}</span><span style={{
+              "fontSize": "9px",
+              "color": "#AAA",
+              "marginLeft": "8px"
+            }}>{confidence}</span>
+
+
+
+          </div >
+
+
+
+        )
+      }
+    },
+  ]
+
+
+
+
+  const insertlabel = (idx) => {
+    let insert = []
+    Object.keys(state["result"]["data"]).forEach(rowlabel => {
+
+      state["result"]["data"][rowlabel].filter(res => res.index == idx && res.outputBox != undefined).map((res, i) => {
+        let draw = res.outputBox
+        let x = draw[0][0] / 2
+        let y = draw[0][1] / 2
+        let w = (draw[1][0] - draw[0][0]) / 2
+        let h = (draw[3][1] - draw[0][1]) / 2
+        console.log(rowlabel, ": ", res.value)
+        console.log(x, y, w, h)
+        insert.push(
+          <Tooltip title={rowlabel + ": " + res.value} >
+            <label style={{
+              position: "absolute",
+              left: x,
+              top: y,
+              width: w,
+              height: h
+
+            }}
+              key={i}
+            >
+
+            </label>
+          </Tooltip>)
+      })
+
+    })
+    return insert
+
+  }
+
+  const ImageList = ({ index, name }) => {
+    const insert = insertlabel(index)
 
     return (
-      `      <div>
-        <label>title</label>
-      </div>`
+      <div style={{ position: "relative" }}>
+
+
+        <img style={{ width: "500px" }} src={`data:image/png;base64,` + state.documentImage[name]} alt="" />
+
+        {
+          insert.map(ele => {
+            return ele
+          })
+        }
+
+      </div>
     )
   }
 
+  const [photoes, setPhotoes] = useState({
+    index: 0,
+    dotPosition: 'top',
+    changeValues: [],
+  });
+
+  const [coll, setColl] = useState({
+    key: 0,
+  });
+  const callback = key => {
+    setColl({ ...coll, key });
+  };
+
+  const onChange = (a, b, c) => {
+    setPhotoes({ ...photoes, changeValues: [a, b, c] });
+  };
+
+
+  const imageCarousel = () => {
+
+    console.log(state.documentImage)
+    return (
+      <div>
+        <img style={{ width: "500px" }} src={`data:image/png;base64,` + state.documentImage.front} alt="" />
+      </div>
+    )
+
+
+  }
 
 
 
@@ -66,9 +207,6 @@ const Info = () => {
   });
 
 
-
-  console.log(state)
-  const { update } = state;
   const [form] = Form.useForm();
 
   const handleSubmit = values => {
@@ -135,15 +273,20 @@ const Info = () => {
       );
     }
   };
+
   const toBase64 = file => new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => resolve(reader.result);
     reader.onerror = error => reject(error);
   });
+
   const scan = async () => {
+
+
     let r = {}
     let base64arr
+
     if (document.querySelector('#document').files.length > 0) {
       let base64str = await toBase64(document.querySelector('#document').files[0])
       base64arr = base64str.split("base64,")
@@ -154,44 +297,50 @@ const Info = () => {
       base64arr = base64str.split("base64,")
       r["documentBack"] = base64arr[1]
     }
-    if (document.querySelector('#face').files.length > 0) {
-      let base64str = await toBase64(document.querySelector('#face').files[0])
-      base64arr = base64str.split("base64,")
-      r["face"] = base64arr[1]
-    }
 
-    // r["profileRaw"] = DEFAULT
+    r["profileRaw"] = DEFAULT
 
-
-
-    // var blob = new Blob([DEFAULT], {type: "text/plain;charset=utf-8" })
-    // FileSaver.saveAs(blob, `http://192.168.0.246:8080/` + "test.json")
-
-    let getProfile = new Promise((resolve, reject) => {
-      axios.get(`http://192.168.0.246:8080/default.json`).then(res => {
-        r["profileRaw"] = res.data
-        resolve()
-      }).catch(err => {
-        console.log("error => ", err)
-      })
-    })
-
-    await getProfile
     let url = "http://192.168.0.104/"
-    axios.post(url, r).then(function (response) {
-      let str = JSON.stringify(response.data, null, 2);
+    axios.post(url, r, {
+      headers: {
+        Authorization: "Apikey floES9vvi4CPOXpADR3c5zvIy2UGksrx",
+      }
+    }).then(function (res) {
+      let response = res.data
 
-      showModal(response.data)
+
+      console.log(response)
+
+      Object.keys(response.data).map(parameters => {
+
+        if (!supported_fields.includes(parameters)) {
+          delete response.data[parameters]
+        }
+
+      })
+
+      console.log(Object.keys(response.data))
+      showModal(response)
 
     }).catch(function (error) {
 
       console.log(error)
     });
-
-
-
-
   }
+
+  const TableList = () => {
+
+    const responseDataSource = getDataSource()
+
+    return (
+
+      <Table className="table-responsive" pagination={false} dataSource={responseDataSource} columns={docColums} showHeader={false} />
+
+    )
+  }
+
+
+
 
 
 
@@ -201,55 +350,52 @@ const Info = () => {
       <Col xl={10} md={16} xs={24}>
         <div className="user-info-form">
           <BasicFormWrapper>
-            <Form style={{ width: '100%', position: "inherit", }} form={form} name="info" onFinish={handleSubmit}>
-              <Heading className="form-title" as="h4">
-                Upload Single Document
-              </Heading>
+            <Form style={{ width: '100%', position: "inherit", }} form={form} name="info" colon={false} onFinish={handleSubmit}>
 
-              <Form.Item name="image" label="Front Image">
-                <figure className="photo-upload align-center-v"
-                  style={{
-                    position: "inherit",
-                  }}>
-                  <input type="file" id="document" className="form-control"></input>
-                </figure>
+              <Form.Item label=
+                {
+                  <div>
+                    <h5 style={{ fontSize: "20px" }}>Front of Document</h5>
+                    <p>Please upload image of the document or enter url to remote document image.</p>
+                  </div>
+                }>
+
+                <Row align="middle" >
+
+                  <Col lg={8} md={9} xs={24}>
+                    <label htmlFor="name">Document Image - Front</label>
+                  </Col>
+                  <Col lg={16} md={15} xs={24}>
+
+                    <input type="file" id="document" className="form-control"></input>
+
+                  </Col>
+                </Row>
               </Form.Item>
+              <Form.Item label=
+                {
+                  <div>
+                    <h5 style={{ fontSize: "20px" }}>Back of Document</h5>
+                    <p>To perform dual-side scan, supply image to back of the document.</p>
+                  </div>
+                }>
 
-              <Form.Item name="image" label="Back Image">
-                <figure className="photo-upload align-center-v"
-                  style={{
-                    position: "inherit",
-                  }}>
-                  <input type="file" id="documentBack" className="form-control"></input>
-                </figure>
-              </Form.Item>
+                <Row align="middle" >
 
-              <Form.Item name="image" label="Face Image">
-                <figure className="photo-upload align-center-v"
-                  style={{
-                    position: "inherit",
-                  }}>
-                  <input type="file" id="face" className="form-control"></input>
-                </figure>
-              </Form.Item>
+                  <Col lg={8} md={9} xs={24}>
+                    <label htmlFor="name">Document Image - Back</label>
+                  </Col>
+                  <Col lg={16} md={15} xs={24}>
 
+                    <input type="file" id="documentBack" className="form-control"></input>
 
-
-
-
-
-              <Form.Item name="country" initialValue="" label="Country">
-                <Select style={{ width: '100%' }}>
-                  <Option value="">Please Select</Option>
-                  <Option value="bangladesh">Bangladesh</Option>
-                  <Option value="india">India</Option>
-                  <Option value="pakistan">Pakistan</Option>
-                </Select>
+                  </Col>
+                </Row>
               </Form.Item>
 
 
               <Form.Item>
-                <div className="add-user-bottom text-right">
+                <div className="add-user-bottom text-left">
                   <Button
                     className="ant-btn ant-btn-light"
                     onClick={() => {
@@ -258,11 +404,8 @@ const Info = () => {
                   >
                     Reset
                   </Button>
-                  <Button onClick={showModal} htmlType="submit" type="primary">
-                    <Link to="#">Scan & Result</Link>
-                  </Button>
                   <Button onClick={scan} htmlType="submit" type="primary">
-                    <Link to="#">Send</Link>
+                    <Link to="#">Scan</Link>
                   </Button>
                 </div>
               </Form.Item>
@@ -282,54 +425,53 @@ const Info = () => {
           <ShowResponse>
             <BasicFormWrapper>
               <Form form={form} name="contact" onFinish={handleOk}>
-
+                {/* 
                 <Form.Item name="Status" label="Status">
 
                   <Progress percent={"95"} strokeWidth={5} className="progress-primary" />
 
+                </Form.Item> */}
+
+                <Form.Item label={<p>Document Image</p>} name="name">
+
+                  <div
+                    className="testimonial-block theme-4"
+                    style={{
+                      "backgroundColor": "#fff",
+                    }}>
+
+                    <Carousel afterChange={onChange}
+                      adaptiveHeight={true}
+                      dotPosition={'bottom'}
+
+                    >
+                      {
+                        Object.keys(state.documentImage).map((i, idx) => {
+                          return (
+                            <div>
+                              <ImageList index={idx} name={i} />
+                            </div>
+                          )
+
+                        })
+                      }
+
+                    </Carousel>
+
+                  </div>
+
+
+
                 </Form.Item>
+                <Collapse defaultActiveKey={['1']} onChange={callback}>
+                  <Panel header="Scan Result" key="1">
+                    <TableList />
+                  </Panel>
 
-                <Form.Item label="Document Image" name="name">
-                  <TestimonialStyleWrapper>
-                    <div
-                      className="testimonial-block theme-4"
-                      style={{
-                        "backgroundColor": "#fff"
-                      }}>
-                      <Swiper {...paramsThree}>
-                        {/* <img style={{ width: '100%' }} src={`data:image/png;base64,` + state.documentImage.front} alt="" /> */}
-                        {/* <img style={{ width: '100%' }} src={`data:image/png;base64,` + state.result.outputImage.front} alt="" /> */}
-
-                        {/* <img style={{ width: '100%' }} src={require(`../../../static/img/users/card/1.png`)} alt="" /> */}
-
-                      </Swiper>
-                      <ImageList
-                        title="hi" />
-                    </div>
-
-                  </TestimonialStyleWrapper>
-
-                </Form.Item>
-
-                <Form.Item
-                  label="Email Address"
-                  name="email"
-                  rules={[{ message: 'Please input your email!', type: 'email' }]}
-                >
-                  <Input placeholder="name@example.com" />
-                </Form.Item>
-
-                <Form.Item name="phone" label="Phone Number">
-                  <Input placeholder="+440 2546 5236" />
-                </Form.Item>
-
-                <Form.Item name="designation" label="Position">
-                  <Input placeholder="Input Position" />
-                </Form.Item>
-
-                <Form.Item name="company" label="Company Name">
-                  <Input placeholder="Company Name" />
-                </Form.Item>
+                  <Panel header="Error" key="2">
+                    <TableList />
+                  </Panel>
+                </Collapse>
 
 
               </Form>
