@@ -40,32 +40,1562 @@ const supported_fields = ["documentNumber", "personalNumber", "firstName", "midd
 
 const { Panel } = Collapse;
 
+
+
+
+let response = {
+  "success": true,
+  "transactionId": "60bdecc7fd476a308d2d675a",
+  "data": {
+    "age": [
+      {
+        "value": "36",
+        "confidence": 0.981,
+        "source": "visual",
+        "index": 0,
+        "inputBox": [
+          [
+            202,
+            184
+          ],
+          [
+            317,
+            184
+          ],
+          [
+            317,
+            201
+          ],
+          [
+            202,
+            201
+          ]
+        ],
+        "outputBox": [
+          [
+            393,
+            364
+          ],
+          [
+            617,
+            365
+          ],
+          [
+            617,
+            398
+          ],
+          [
+            393,
+            397
+          ]
+        ]
+      }
+    ],
+    "countryFull": [
+      {
+        "value": "Hong Kong",
+        "confidence": 1,
+        "source": "visual",
+        "index": 0
+      },
+      {
+        "value": "United Arab Emirates",
+        "confidence": 1,
+        "source": "visual",
+        "index": 1
+      }
+    ],
+    "countryIso2": [
+      {
+        "value": "HK",
+        "confidence": 1,
+        "source": "visual",
+        "index": 0
+      },
+      {
+        "value": "AE",
+        "confidence": 1,
+        "source": "visual",
+        "index": 1
+      }
+    ],
+    "countryIso3": [
+      {
+        "value": "HKG",
+        "confidence": 1,
+        "source": "visual",
+        "index": 0
+      },
+      {
+        "value": "ARE",
+        "confidence": 1,
+        "source": "visual",
+        "index": 1
+      }
+    ],
+    "daysFromIssue": [
+      {
+        "value": "924",
+        "confidence": 0.985,
+        "source": "visual",
+        "index": 0,
+        "inputBox": [
+          [
+            203,
+            277
+          ],
+          [
+            314,
+            277
+          ],
+          [
+            314,
+            300
+          ],
+          [
+            203,
+            300
+          ]
+        ],
+        "outputBox": [
+          [
+            396,
+            544
+          ],
+          [
+            610,
+            545
+          ],
+          [
+            610,
+            589
+          ],
+          [
+            396,
+            588
+          ]
+        ]
+      }
+    ],
+    "dob": [
+      {
+        "value": "1985-06-03",
+        "confidence": 0.981,
+        "source": "visual",
+        "index": 0,
+        "inputBox": [
+          [
+            202,
+            184
+          ],
+          [
+            317,
+            184
+          ],
+          [
+            317,
+            201
+          ],
+          [
+            202,
+            201
+          ]
+        ],
+        "outputBox": [
+          [
+            393,
+            364
+          ],
+          [
+            617,
+            365
+          ],
+          [
+            617,
+            398
+          ],
+          [
+            393,
+            397
+          ]
+        ]
+      }
+    ],
+    "dobDay": [
+      {
+        "value": "3",
+        "confidence": 0.981,
+        "source": "visual",
+        "index": 0,
+        "inputBox": [
+          [
+            202,
+            184
+          ],
+          [
+            317,
+            184
+          ],
+          [
+            317,
+            201
+          ],
+          [
+            202,
+            201
+          ]
+        ],
+        "outputBox": [
+          [
+            393,
+            364
+          ],
+          [
+            617,
+            365
+          ],
+          [
+            617,
+            398
+          ],
+          [
+            393,
+            397
+          ]
+        ]
+      }
+    ],
+    "dobMonth": [
+      {
+        "value": "6",
+        "confidence": 0.981,
+        "source": "visual",
+        "index": 0,
+        "inputBox": [
+          [
+            202,
+            184
+          ],
+          [
+            317,
+            184
+          ],
+          [
+            317,
+            201
+          ],
+          [
+            202,
+            201
+          ]
+        ],
+        "outputBox": [
+          [
+            393,
+            364
+          ],
+          [
+            617,
+            365
+          ],
+          [
+            617,
+            398
+          ],
+          [
+            393,
+            397
+          ]
+        ]
+      }
+    ],
+    "dobYear": [
+      {
+        "value": "1985",
+        "confidence": 0.981,
+        "source": "visual",
+        "index": 0,
+        "inputBox": [
+          [
+            202,
+            184
+          ],
+          [
+            317,
+            184
+          ],
+          [
+            317,
+            201
+          ],
+          [
+            202,
+            201
+          ]
+        ],
+        "outputBox": [
+          [
+            393,
+            364
+          ],
+          [
+            617,
+            365
+          ],
+          [
+            617,
+            398
+          ],
+          [
+            393,
+            397
+          ]
+        ]
+      },
+      {
+        "value": "1985",
+        "confidence": 0.981,
+        "source": "visual",
+        "index": 0,
+        "inputBox": [
+          [
+            202,
+            184
+          ],
+          [
+            317,
+            184
+          ],
+          [
+            317,
+            201
+          ],
+          [
+            202,
+            201
+          ]
+        ],
+        "outputBox": [
+          [
+            393,
+            364
+          ],
+          [
+            617,
+            365
+          ],
+          [
+            617,
+            398
+          ],
+          [
+            393,
+            397
+          ]
+        ]
+      }
+    ],
+    "documentNumber": [
+      {
+        "value": "Z683365(5)",
+        "confidence": 0.973,
+        "source": "visual",
+        "index": 0,
+        "inputBox": [
+          [
+            350,
+            277
+          ],
+          [
+            494,
+            276
+          ],
+          [
+            494,
+            299
+          ],
+          [
+            349,
+            300
+          ]
+        ],
+        "outputBox": [
+          [
+            679,
+            545
+          ],
+          [
+            959,
+            545
+          ],
+          [
+            958,
+            589
+          ],
+          [
+            677,
+            589
+          ]
+        ]
+      }
+    ],
+    "documentSide": [
+      {
+        "value": "FRONT",
+        "confidence": 1,
+        "source": "visual",
+        "index": 0
+      },
+      {
+        "value": "FRONT",
+        "confidence": 1,
+        "source": "visual",
+        "index": 1
+      }
+    ],
+    "documentType": [
+      {
+        "value": "I",
+        "confidence": 1,
+        "source": "visual",
+        "index": 0
+      },
+      {
+        "value": "I",
+        "confidence": 1,
+        "source": "visual",
+        "index": 1
+      }
+    ],
+    "firstName": [
+      {
+        "value": "Wing Ching",
+        "confidence": 0.987,
+        "source": "visual",
+        "index": 0,
+        "inputBox": [
+          [
+            88,
+            94
+          ],
+          [
+            199,
+            94
+          ],
+          [
+            199,
+            113
+          ],
+          [
+            88,
+            113
+          ]
+        ],
+        "outputBox": [
+          [
+            170,
+            187
+          ],
+          [
+            388,
+            188
+          ],
+          [
+            388,
+            225
+          ],
+          [
+            170,
+            225
+          ]
+        ]
+      },
+      {
+        "value": "Ma",
+        "confidence": 0.996,
+        "source": "visual",
+        "index": 1,
+        "inputBox": [
+          [
+            103,
+            786
+          ],
+          [
+            134,
+            786
+          ],
+          [
+            134,
+            808
+          ],
+          [
+            103,
+            808
+          ]
+        ],
+        "outputBox": [
+          [
+            116,
+            480
+          ],
+          [
+            160,
+            480
+          ],
+          [
+            161,
+            514
+          ],
+          [
+            116,
+            513
+          ]
+        ]
+      }
+    ],
+    "firstNameLocal": [
+      {
+        "value": "ما",
+        "confidence": 0.87,
+        "source": "visual",
+        "index": 1,
+        "inputBox": [
+          [
+            419,
+            718
+          ],
+          [
+            437,
+            718
+          ],
+          [
+            437,
+            746
+          ],
+          [
+            419,
+            746
+          ]
+        ],
+        "outputBox": [
+          [
+            574,
+            387
+          ],
+          [
+            600,
+            388
+          ],
+          [
+            603,
+            431
+          ],
+          [
+            576,
+            430
+          ]
+        ]
+      }
+    ],
+    "fullName": [
+      {
+        "value": "Wing Ching LOK",
+        "confidence": 0.9,
+        "source": "visual",
+        "index": 0,
+        "inputBox": [
+          [
+            13,
+            94
+          ],
+          [
+            199,
+            94
+          ],
+          [
+            199,
+            113
+          ],
+          [
+            13,
+            113
+          ]
+        ],
+        "outputBox": [
+          [
+            24,
+            186
+          ],
+          [
+            388,
+            188
+          ],
+          [
+            388,
+            225
+          ],
+          [
+            25,
+            224
+          ]
+        ]
+      },
+      {
+        "value": "Ma Elena Esguerra Sarreal",
+        "confidence": 0.99,
+        "source": "visual",
+        "index": 1,
+        "inputBox": [
+          [
+            103,
+            783
+          ],
+          [
+            364,
+            781
+          ],
+          [
+            364,
+            808
+          ],
+          [
+            103,
+            808
+          ]
+        ],
+        "outputBox": [
+          [
+            116,
+            475
+          ],
+          [
+            497,
+            482
+          ],
+          [
+            499,
+            523
+          ],
+          [
+            116,
+            513
+          ]
+        ]
+      }
+    ],
+    "fullNameLocal": [
+      {
+        "value": "樂永晴",
+        "confidence": 0.993,
+        "source": "visual",
+        "index": 0,
+        "inputBox": [
+          [
+            29,
+            68
+          ],
+          [
+            105,
+            68
+          ],
+          [
+            104,
+            90
+          ],
+          [
+            29,
+            90
+          ]
+        ],
+        "outputBox": [
+          [
+            54,
+            135
+          ],
+          [
+            203,
+            135
+          ],
+          [
+            202,
+            179
+          ],
+          [
+            55,
+            178
+          ]
+        ]
+      }
+    ],
+    "internalId": [
+      {
+        "value": "329",
+        "confidence": 1,
+        "source": "visual",
+        "index": 0
+      },
+      {
+        "value": "1712",
+        "confidence": 1,
+        "source": "visual",
+        "index": 1
+      }
+    ],
+    "issued": [
+      {
+        "value": "2018-11-26",
+        "confidence": 0.985,
+        "source": "visual",
+        "index": 0,
+        "inputBox": [
+          [
+            203,
+            277
+          ],
+          [
+            314,
+            277
+          ],
+          [
+            314,
+            300
+          ],
+          [
+            203,
+            300
+          ]
+        ],
+        "outputBox": [
+          [
+            396,
+            544
+          ],
+          [
+            610,
+            545
+          ],
+          [
+            610,
+            589
+          ],
+          [
+            396,
+            588
+          ]
+        ]
+      }
+    ],
+    "issuedDay": [
+      {
+        "value": "26",
+        "confidence": 0.985,
+        "source": "visual",
+        "index": 0,
+        "inputBox": [
+          [
+            203,
+            277
+          ],
+          [
+            314,
+            277
+          ],
+          [
+            314,
+            300
+          ],
+          [
+            203,
+            300
+          ]
+        ],
+        "outputBox": [
+          [
+            396,
+            544
+          ],
+          [
+            610,
+            545
+          ],
+          [
+            610,
+            589
+          ],
+          [
+            396,
+            588
+          ]
+        ]
+      }
+    ],
+    "issuedMonth": [
+      {
+        "value": "11",
+        "confidence": 0.985,
+        "source": "visual",
+        "index": 0,
+        "inputBox": [
+          [
+            203,
+            277
+          ],
+          [
+            314,
+            277
+          ],
+          [
+            314,
+            300
+          ],
+          [
+            203,
+            300
+          ]
+        ],
+        "outputBox": [
+          [
+            396,
+            544
+          ],
+          [
+            610,
+            545
+          ],
+          [
+            610,
+            589
+          ],
+          [
+            396,
+            588
+          ]
+        ]
+      },
+      {
+        "value": "11",
+        "confidence": 0.985,
+        "source": "visual",
+        "index": 0,
+        "inputBox": [
+          [
+            203,
+            277
+          ],
+          [
+            314,
+            277
+          ],
+          [
+            314,
+            300
+          ],
+          [
+            203,
+            300
+          ]
+        ],
+        "outputBox": [
+          [
+            396,
+            544
+          ],
+          [
+            610,
+            545
+          ],
+          [
+            610,
+            589
+          ],
+          [
+            396,
+            588
+          ]
+        ]
+      }
+    ],
+    "issuedYear": [
+      {
+        "value": "2018",
+        "confidence": 0.985,
+        "source": "visual",
+        "index": 0,
+        "inputBox": [
+          [
+            203,
+            277
+          ],
+          [
+            314,
+            277
+          ],
+          [
+            314,
+            300
+          ],
+          [
+            203,
+            300
+          ]
+        ],
+        "outputBox": [
+          [
+            396,
+            544
+          ],
+          [
+            610,
+            545
+          ],
+          [
+            610,
+            589
+          ],
+          [
+            396,
+            588
+          ]
+        ]
+      }
+    ],
+    "lastName": [
+      {
+        "value": "LOK",
+        "confidence": 0.9,
+        "source": "visual",
+        "index": 0,
+        "inputBox": [
+          [
+            13,
+            94
+          ],
+          [
+            58,
+            94
+          ],
+          [
+            58,
+            113
+          ],
+          [
+            13,
+            113
+          ]
+        ],
+        "outputBox": [
+          [
+            24,
+            186
+          ],
+          [
+            112,
+            187
+          ],
+          [
+            112,
+            224
+          ],
+          [
+            25,
+            224
+          ]
+        ]
+      },
+      {
+        "value": "Sarreal",
+        "confidence": 0.995,
+        "source": "visual",
+        "index": 1,
+        "inputBox": [
+          [
+            293,
+            783
+          ],
+          [
+            364,
+            781
+          ],
+          [
+            364,
+            803
+          ],
+          [
+            293,
+            805
+          ]
+        ],
+        "outputBox": [
+          [
+            392,
+            482
+          ],
+          [
+            497,
+            482
+          ],
+          [
+            499,
+            516
+          ],
+          [
+            394,
+            516
+          ]
+        ]
+      }
+    ],
+    "lastNameLocal": [
+      {
+        "value": "ساريال",
+        "confidence": 0.933,
+        "source": "visual",
+        "index": 1,
+        "inputBox": [
+          [
+            208,
+            721
+          ],
+          [
+            272,
+            721
+          ],
+          [
+            272,
+            750
+          ],
+          [
+            208,
+            750
+          ]
+        ],
+        "outputBox": [
+          [
+            266,
+            385
+          ],
+          [
+            358,
+            387
+          ],
+          [
+            360,
+            431
+          ],
+          [
+            266,
+            428
+          ]
+        ]
+      }
+    ],
+    "middleName": [
+      {
+        "value": "Elena Esguerra",
+        "confidence": 0.99,
+        "source": "visual",
+        "index": 1,
+        "inputBox": [
+          [
+            138,
+            785
+          ],
+          [
+            289,
+            783
+          ],
+          [
+            289,
+            807
+          ],
+          [
+            138,
+            808
+          ]
+        ],
+        "outputBox": [
+          [
+            166,
+            479
+          ],
+          [
+            386,
+            482
+          ],
+          [
+            388,
+            519
+          ],
+          [
+            167,
+            514
+          ]
+        ]
+      }
+    ],
+    "middleNameLocal": [
+      {
+        "value": "ايلينا اسجویرا",
+        "confidence": 0.904,
+        "source": "visual",
+        "index": 1,
+        "inputBox": [
+          [
+            283,
+            718
+          ],
+          [
+            409,
+            718
+          ],
+          [
+            409,
+            748
+          ],
+          [
+            283,
+            748
+          ]
+        ],
+        "outputBox": [
+          [
+            374,
+            382
+          ],
+          [
+            559,
+            387
+          ],
+          [
+            561,
+            432
+          ],
+          [
+            376,
+            428
+          ]
+        ]
+      },
+      {
+        "value": "ايلينا اسجویرا",
+        "confidence": 0.904,
+        "source": "visual",
+        "index": 1,
+        "inputBox": [
+          [
+            283,
+            718
+          ],
+          [
+            409,
+            718
+          ],
+          [
+            409,
+            748
+          ],
+          [
+            283,
+            748
+          ]
+        ],
+        "outputBox": [
+          [
+            374,
+            382
+          ],
+          [
+            559,
+            387
+          ],
+          [
+            561,
+            432
+          ],
+          [
+            376,
+            428
+          ]
+        ]
+      }
+    ],
+    "nationalityFull": [
+      {
+        "value": "Hong Kong",
+        "confidence": 1,
+        "source": "visual",
+        "index": 0
+      },
+      {
+        "value": "United Arab Emirates",
+        "confidence": 1,
+        "source": "visual",
+        "index": 1
+      },
+      {
+        "value": "Philippines",
+        "confidence": 0.994,
+        "source": "visual",
+        "index": 1,
+        "inputBox": [
+          [
+            146,
+            865
+          ],
+          [
+            259,
+            863
+          ],
+          [
+            259,
+            886
+          ],
+          [
+            146,
+            889
+          ]
+        ],
+        "outputBox": [
+          [
+            180,
+            603
+          ],
+          [
+            346,
+            605
+          ],
+          [
+            348,
+            641
+          ],
+          [
+            180,
+            641
+          ]
+        ]
+      }
+    ],
+    "nationalityIso2": [
+      {
+        "value": "HK",
+        "confidence": 1,
+        "source": "visual",
+        "index": 0
+      },
+      {
+        "value": "AE",
+        "confidence": 1,
+        "source": "visual",
+        "index": 1
+      }
+    ],
+    "nationalityIso3": [
+      {
+        "value": "HKG",
+        "confidence": 1,
+        "source": "visual",
+        "index": 0
+      },
+      {
+        "value": "ARE",
+        "confidence": 1,
+        "source": "visual",
+        "index": 1
+      }
+    ],
+    "optionalData": [
+      {
+        "value": "*** AZ",
+        "confidence": 0.99,
+        "source": "visual",
+        "index": 0,
+        "inputBox": [
+          [
+            203,
+            208
+          ],
+          [
+            255,
+            208
+          ],
+          [
+            254,
+            222
+          ],
+          [
+            203,
+            222
+          ]
+        ],
+        "outputBox": [
+          [
+            396,
+            411
+          ],
+          [
+            497,
+            411
+          ],
+          [
+            494,
+            439
+          ],
+          [
+            396,
+            437
+          ]
+        ]
+      },
+      {
+        "value": "784-1988-0920430-2",
+        "confidence": 0.982,
+        "source": "visual",
+        "index": 1,
+        "inputBox": [
+          [
+            291,
+            627
+          ],
+          [
+            475,
+            625
+          ],
+          [
+            475,
+            646
+          ],
+          [
+            291,
+            647
+          ]
+        ],
+        "outputBox": [
+          [
+            380,
+            247
+          ],
+          [
+            648,
+            249
+          ],
+          [
+            650,
+            280
+          ],
+          [
+            382,
+            277
+          ]
+        ]
+      }
+    ],
+    "personalNumber": [
+      {
+        "value": "2867 3057 2532",
+        "confidence": 0.994,
+        "source": "visual",
+        "index": 0,
+        "inputBox": [
+          [
+            201,
+            119
+          ],
+          [
+            359,
+            119
+          ],
+          [
+            359,
+            136
+          ],
+          [
+            202,
+            137
+          ]
+        ],
+        "outputBox": [
+          [
+            392,
+            237
+          ],
+          [
+            701,
+            239
+          ],
+          [
+            701,
+            272
+          ],
+          [
+            393,
+            273
+          ]
+        ]
+      },
+      {
+        "value": "784-1988-0920430-2",
+        "confidence": 0.982,
+        "source": "visual",
+        "index": 1,
+        "inputBox": [
+          [
+            291,
+            627
+          ],
+          [
+            475,
+            625
+          ],
+          [
+            475,
+            646
+          ],
+          [
+            291,
+            647
+          ]
+        ],
+        "outputBox": [
+          [
+            380,
+            247
+          ],
+          [
+            648,
+            249
+          ],
+          [
+            650,
+            280
+          ],
+          [
+            382,
+            277
+          ]
+        ]
+      }
+    ],
+    "sex": [
+      {
+        "value": "F",
+        "confidence": 0.994,
+        "source": "visual",
+        "index": 0,
+        "inputBox": [
+          [
+            354,
+            184
+          ],
+          [
+            365,
+            184
+          ],
+          [
+            365,
+            201
+          ],
+          [
+            353,
+            201
+          ]
+        ],
+        "outputBox": [
+          [
+            689,
+            365
+          ],
+          [
+            711,
+            365
+          ],
+          [
+            711,
+            398
+          ],
+          [
+            687,
+            398
+          ]
+        ]
+      }
+    ]
+  },
+  "outputImage": {
+    "front": "https://192.168.0.104/image/60bdecc7fd476a308d2d675a/c824c269fab01db97ee0775a1af3b09bced874e3faf851eba140f3b431f2084b/front.jpg",
+    "back": "https://192.168.0.104/image/60bdecc7fd476a308d2d675a/c824c269fab01db97ee0775a1af3b09bced874e3faf851eba140f3b431f2084b/back.jpg"
+  },
+  "warning": [
+    {
+      "code": "DOCUMENT_COUNTRY_MISMATCH",
+      "description": "Issuing country discrepancy between front and back document. Front: HK, Back: AE.",
+      "severity": "high",
+      "confidence": 1
+    },
+    {
+      "code": "DOCUMENT_NAME_MISMATCH",
+      "description": "Name discrepancy between front and back document. Front: Wing Ching LOK, Back: Ma Elena Esguerra Sarreal.",
+      "severity": "high",
+      "confidence": 0.9285714285714286
+    },
+    {
+      "code": "FAKE_ID",
+      "description": "The document uploaded is a fake or sample document, not an authentic document.",
+      "severity": "high",
+      "confidence": 1
+    },
+    {
+      "code": "IMAGE_TOO_SMALL",
+      "description": "The document image is too small and unlikely to be a genuine document.",
+      "severity": "medium",
+      "confidence": 0.835136
+    },
+    {
+      "code": "ARTIFICIAL_IMAGE",
+      "description": "Document appears to be created artificially, not a naturally taken photo.",
+      "severity": "high",
+      "confidence": 0.5643312530882476
+    },
+    {
+      "code": "INVALID_CAMERA_PERSPECTIVE",
+      "description": "The document image is not a naturally taken photo using a camera, it could be scanned or computer generated.",
+      "severity": "medium",
+      "confidence": 0.8333333333333334
+    },
+    {
+      "code": "IP_COUNTRY_MISMATCH",
+      "description": "Inconsistency between user IP address country (INVALID IP ADDRESS.) and document country (HK).",
+      "severity": "low",
+      "confidence": 1
+    }
+  ],
+  "profileId": "60bb92f640dcb062c10463d0",
+  "reviewScore": 1,
+  "rejectScore": 5,
+  "decision": "reject",
+  "quota": 9999,
+  "credit": 44,
+  "customData": "abc",
+  "executionTime": 4.630842185
+}
+
+Object.keys(response.data).map(parameters => {
+
+  //for parameters
+  response.data[parameters].filter(i => i.index == 0).map(res => {
+    if (!supported_fields.includes(parameters)) {
+      delete response.data[parameters]
+    }
+
+  })
+
+})
+
+console.log(response)
+
 const Info = () => {
 
 
 
-  const getDataSource = () => {
-    console.log("getDataSource")
-    console.log(state)
-
-    let source = []
-    Object.keys(state.result.data).map(parameters => {
-      state.result.data[parameters].filter(i => i.index == 0).map(res => {
-        if (supported_fields.includes(parameters)) {
-          source.push(
-            {
-              "parameters": parameters,
-              "value": [res.value, res.confidence]
-            }
-          );
-        }
-
-      })
-    })
-
-    return source
-
-  }
 
 
   const docColums = [
@@ -105,6 +1635,43 @@ const Info = () => {
     },
   ]
 
+  const warnColums = [
+    {
+      width: "30%",
+      title: 'Parameters',
+      dataIndex: 'parameters',
+      key: 'parameters',
+      render: ([ele, discript]) => {
+        return (
+          <Tooltip title={discript}>
+            <div style={{
+              display: "-webkit-inline-box",
+              overflowWrap: "anywhere"
+            }}>
+              <span style={{ fontWeight: 800 }}>{ele}</span>
+            </div>
+          </Tooltip>
+        )
+      }
+    },
+    {
+      title: 'Value',
+      dataIndex: 'value',
+      key: 'value',
+      render: (confidence) => {
+        return (
+          <Progress
+            percent={parseInt(confidence * 100)}
+            style={{ marginBottom: '15px' }}
+          />
+
+
+
+
+        )
+      }
+    },
+  ]
 
 
 
@@ -146,10 +1713,14 @@ const Info = () => {
     const insert = insertlabel(index)
 
     return (
-      <div style={{ position: "relative" }}>
+      <div style={{ position: "relative", width: "500px" }}>
 
 
-        <img style={{ width: "500px" }} src={`data:image/png;base64,` + state.documentImage[name]} alt="" />
+        {/* <img style={{ width: "500px" }} src={`data:image/png;base64,` + state.documentImage[name]} alt="" /> */}
+        <img style={{
+          maxWidth: "500px",
+          height: "auto",
+        }} src={state.documentImage[name]} alt="" />
 
         {
           insert.map(ele => {
@@ -202,8 +1773,11 @@ const Info = () => {
     modalType: 'primary',
     url: null,
     update: {},
-    result: {},
-    documentImage: {},
+    result: response,
+    documentImage: {
+      "front": "https://192.168.0.104/image/60bdecc7fd476a308d2d675a/c824c269fab01db97ee0775a1af3b09bced874e3faf851eba140f3b431f2084b/front.jpg",
+      "back": "https://192.168.0.104/image/60bdecc7fd476a308d2d675a/c824c269fab01db97ee0775a1af3b09bced874e3faf851eba140f3b431f2084b/back.jpg"
+    },
   });
 
 
@@ -328,17 +1902,56 @@ const Info = () => {
     });
   }
 
-  const TableList = () => {
+  const TableList = ({ name }) => {
 
-    const responseDataSource = getDataSource()
 
-    return (
+    let source = []
+    switch (name) {
+      case 'result': {
+        Object.keys(state.result.data).map(parameters => {
+          state.result.data[parameters].filter(i => i.index == 0).map(res => {
+            if (supported_fields.includes(parameters)) {
+              source.push(
+                {
+                  "parameters": parameters,
+                  "value": [res.value, res.confidence]
+                }
+              );
+            }
 
-      <Table className="table-responsive" pagination={false} dataSource={responseDataSource} columns={docColums} showHeader={false} />
+          })
+        })
+        return (
 
-    )
+          <Table className="table-responsive" pagination={false} dataSource={source} columns={docColums} showHeader={false} />
+
+        )
+
+      }
+      case 'error': {
+
+        state.result.warning.forEach(parameters => {
+          console.log(parameters)
+          source.push({
+            "parameters": [parameters.code, parameters.description],
+            "value": parameters.confidence
+
+          })
+
+        })
+        console.log(source)
+
+        return (
+
+          <Table className="table-responsive" pagination={false} dataSource={source} columns={warnColums}
+
+            showHeader={false} />
+
+        )
+      }
+    }
+
   }
-
 
 
 
@@ -416,67 +2029,53 @@ const Info = () => {
       <Modal
         type={state.modalType}
         title="Response"
-        visible={state.visible}
+        // visible={state.visible}
+        visible={true}
         footer={null}
         onCancel={handleCancel}
       >
 
         <div className="project-modal">
-          <ShowResponse>
-            <BasicFormWrapper>
-              <Form form={form} name="contact" onFinish={handleOk}>
-                {/* 
-                <Form.Item name="Status" label="Status">
 
-                  <Progress percent={"95"} strokeWidth={5} className="progress-primary" />
 
-                </Form.Item> */}
 
-                <Form.Item label={<p>Document Image</p>} name="name">
+          <Carousel afterChange={onChange}
+            // centerMode={true}
+            // adaptiveHeight={true}
+            dotPosition={'bottom'}
+            style={{
+              textAlign: "-webkit-center",
+              backgroundColor: "#000",
+            }}
 
-                  <div
-                    className="testimonial-block theme-4"
-                    style={{
-                      "backgroundColor": "#fff",
-                    }}>
-
-                    <Carousel afterChange={onChange}
-                      adaptiveHeight={true}
-                      dotPosition={'bottom'}
-
-                    >
-                      {
-                        Object.keys(state.documentImage).map((i, idx) => {
-                          return (
-                            <div>
-                              <ImageList index={idx} name={i} />
-                            </div>
-                          )
-
-                        })
-                      }
-
-                    </Carousel>
-
+          >
+            {
+              Object.keys(state.documentImage).map((i, idx) => {
+                return (
+                  <div>
+                    <ImageList index={idx} name={i} />
                   </div>
+                )
 
+              })
+            }
 
+          </Carousel>
 
-                </Form.Item>
-                <Collapse defaultActiveKey={['1']} onChange={callback}>
-                  <Panel header="Scan Result" key="1">
-                    <TableList />
-                  </Panel>
+          <Collapse defaultActiveKey={['1']} onChange={callback} style={
+            {
+              marginTop: "3%"
+            }
+          }>
+            <Panel header="Scan Result" key="1">
+              <TableList name={'result'} />
+            </Panel>
 
-                  <Panel header="Error" key="2">
-                    <TableList />
-                  </Panel>
-                </Collapse>
+            <Panel header="Error" key="2">
+              <TableList name={'error'} />
+            </Panel>
+          </Collapse>
 
-
-              </Form>
-            </BasicFormWrapper>
-          </ShowResponse>
         </div>
       </Modal >
 
