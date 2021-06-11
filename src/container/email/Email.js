@@ -1,43 +1,25 @@
-import React, { useState, lazy, Suspense, useLayoutEffect, useEffect } from 'react';
-import { Row, Col, Spin, Form, Table, Carousel, Collapse, Tabs, Progress, Tooltip, Layout, Input, Select } from 'antd';
-import { Switch, Route } from 'react-router-dom';
+import React, { useState, useLayoutEffect, useEffect } from 'react';
+import { Row, Col, Spin, Form, Table, Carousel, Collapse, Image, Tabs, Progress, Tooltip, Upload, Layout, Input, Select, message } from 'antd';
+import { InboxOutlined } from '@ant-design/icons';
+import axios from 'axios'
+import { render } from '@testing-library/react';
 import { Link } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
 import propTypes from 'prop-types';
-import EmailNavbar from './overview/Navbar';
-import ComposeMail from './overview/Compose';
-import { EmailWrapper, MailSideBar } from './overview/style';
+import { EmailWrapper } from './overview/style';
+import { BasicFormWrapper, Main } from '../styled';
+import { CardStyleWrapper } from '../ui-elements/ui-elements-styled';
+
 import { PageHeader } from '../../components/page-headers/page-headers';
 import { Cards } from '../../components/cards/frame/cards-frame';
-import { BasicFormWrapper, Main } from '../styled';
-
 import { Button } from '../../components/buttons/buttons';
-import { Modal, alertModal } from '../../components/modals/antd-modals';
-import { ShareButtonPageHeader } from '../../components/buttons/share-button/share-button';
-import { ExportButtonPageHeader } from '../../components/buttons/export-button/export-button';
-import { CalendarButtonPageHeader } from '../../components/buttons/calendar-button/calendar-button';
-
-
-
-
-import { render } from '@testing-library/react';
-import axios from 'axios'
-
-
-
-const Inbox = lazy(() => import('./overview/Inbox'));
-const Sent = lazy(() => import('./overview/Sent'));
-const Draft = lazy(() => import('./overview/Draft'));
-const Starred = lazy(() => import('./overview/Starred'));
-const Trash = lazy(() => import('./overview/Trash'));
-const Spam = lazy(() => import('./overview/Spam'));
-const MailDetailView = lazy(() => import('./overview/MailDetailView'));
+import { Modal } from '../../components/modals/antd-modals';
 
 
 const { TabPane } = Tabs;
 const { Panel } = Collapse;
-const { header, Footer, Sider, Content } = Layout;
 const { Option, OptGroup } = Select;
+const { Dragger } = Upload;
 
 
 const Email = ({ match }) => {
@@ -48,7 +30,6 @@ const Email = ({ match }) => {
 
   const [scanSetting, setScanSetting] = useState({
     "profile": "",
-    "face": "",
     "verifyName": "",
     "verifyDob": "",
     "verifyAge": "",
@@ -61,8 +42,6 @@ const Email = ({ match }) => {
   })
 
   const [scanDataSource, setScanDataSource] = useState("")
-
-
 
   const [state, setState] = useState({
     responsive: 0,
@@ -114,11 +93,7 @@ const Email = ({ match }) => {
 
 
     response['response'].map((element, idx) => {
-      source.push(
-        {
-          "transactionId": element
-        }
-      )
+      source.push({ "transactionId": element })
     })
 
     return source
@@ -126,7 +101,6 @@ const Email = ({ match }) => {
 
   const showResult = (result) => {
     console.log("transactionId => ", result['transactionId'])
-    console.log(result)
     let r = {}
     r['response'] = result
     r['documentImage'] = result['outputImage']
@@ -150,103 +124,75 @@ const Email = ({ match }) => {
                 {
                   "parameters": parameters,
                   "value": [res.value, res.confidence]
-
                 }
               );
             }
-
           })
         })
         return (
-
-          <Table className="table-responsive" pagination={false} dataSource={source} columns={docColums} showHeader={false} />
-
+          <Table
+            className="table-responsive"
+            pagination={false}
+            dataSource={source}
+            columns={docColumns}
+            showHeader={false} />
         )
 
       }
       case 'error': {
-        if (resultTable.response.warning.length == 0) {
-          return
+        if (resultTable.response.warning == undefined || resultTable.response.warning.length == 0) {
+          return null
         }
         resultTable.response.warning.forEach(parameters => {
           console.log(parameters)
           source.push({
             "parameters": [parameters.code, parameters.description],
             "value": parameters.confidence
-
           })
 
         })
         console.log(source)
 
         return (
-
-          <Table className="table-responsive" pagination={false} dataSource={source} columns={warnColums}
-
+          <Table
+            className="table-responsive"
+            pagination={false}
+            dataSource={source}
+            columns={warnColumns}
             showHeader={false} />
-
         )
       }
-
-
-
-
     }
-
   }
 
-  const ImageList = ({ index, name }) => {
-    console.log(index, name)
-    // const insert = insertlabel(index)
-
-    return (
-      <div style={{
-        position: "relative", width: "500px"
-      }}>
-
-
-
-        <img style={{
-          maxWidth: "500px",
-          height: "auto",
-        }} src={resultTable.documentImage[name]} alt="" />
-        {/* 
-        {
-          insert.map(ele => {
-            return ele
-          })
-        } */}
-
-      </div>
-    )
-  }
 
 
   const LogList = () => {
 
     const columns = [
-
       {
-        title: "TransactionId",
+        title: "Log",
         dataIndex: 'transactionId',
         key: 'transactionId',
+        align: "center",
         render: (ele) => {
           return (
-            <Button className="btn-icon btn-outlined" size="default" outlined type="light"
-              style={{
-                width: "-webkit-fill-available"
-              }}
+            <Button
+              className="btn-icon btn-outlined"
+              size="default"
+              outlined
+              type="light"
+              style={{ width: "-webkit-fill-available" }}
               onClick={() => {
                 showResult(ele)
               }}
             >
-              <FeatherIcon icon="layers" />
+              {/* <FeatherIcon icon="layers" /> */}
               {ele['transactionId']}
             </Button>
           )
         }
       }
-
     ]
 
 
@@ -262,18 +208,14 @@ const Email = ({ match }) => {
         tableLayout={'fixed'}
         pagination={{ pageSize: 10, position: ['bottomCenter'] }}
         onRow={(record, rewIndex) => {
-
           console.log(record, rewIndex)
         }}
-
       />
-
     )
-
   }
 
 
-  const docColums = [
+  const docColumns = [
     {
       title: 'Parameters',
       dataIndex: 'parameters',
@@ -298,19 +240,13 @@ const Email = ({ match }) => {
               "color": "#AAA",
               "marginLeft": "8px"
             }}>{confidence}</span>
-
-
-
           </div >
-
-
-
         )
       }
     },
   ]
 
-  const warnColums = [
+  const warnColumns = [
     {
       width: "30%",
       title: 'Parameters',
@@ -343,19 +279,14 @@ const Email = ({ match }) => {
               '0%': '#FF3030',
               '100%': '#FF3030',
             }}
-
             status={number === 100 ? 'exception' : null
             }
           />
-
-
-
-
         )
       }
     },
   ]
-  const setClumns = [
+  const setColumns = [
     {
       title: 'Parameters',
       dataIndex: 'parameters',
@@ -363,9 +294,7 @@ const Email = ({ match }) => {
       align: "center",
       render: (ele) => {
         return (
-          <div style={{ display: "-webkit-inline-box" }}>
-            <span style={{ fontWeight: 700, fontSize: "20px" }}>{ele}</span>
-          </div>
+          <span>{ele.replace(/^./, ele[0].toUpperCase())}</span> // 首字轉大寫
         )
       }
     },
@@ -377,7 +306,6 @@ const Email = ({ match }) => {
     },
   ]
 
-
   const toBase64 = file => new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -388,34 +316,40 @@ const Email = ({ match }) => {
 
   const scan = async (name) => {
 
-
-
     setMailEditorStatus({ ...isMailEditorOpen, loading: true })
     console.log("Start to Scan")
 
     let r = {}
-    let base64arr = []
+    let base64arr
+    let frontImage = []
     if (name == 'single') {
       if (document.querySelector('#document').files.length > 0) {
         let base64str = await toBase64(document.querySelector('#document').files[0])
-        base64arr = base64str.split("base64,")
-        base64arr = [base64arr[1]]
-      }
+        base64str = base64str.split("base64,")
 
+        console.log(base64str)
+        frontImage.push(base64str[1])
+      }
 
       if (document.querySelector('#documentBack').files.length > 0) {
         let base64str = await toBase64(document.querySelector('#documentBack').files[0])
         base64arr = base64str.split("base64,")
         r["documentBack"] = base64arr[1]
       }
+
+      if (document.querySelector('#face').files.length > 0) {
+        let base64str = await toBase64(document.querySelector('#face').files[0])
+        base64arr = base64str.split("base64,")
+        r["face"] = base64arr[1]
+      }
     } else {
-      let len = document.querySelector('#documentMutiple').files.length - 1
+      let len = document.querySelector('#documentMultiple').files.length - 1
       if (len > 0) {
         while (len >= 0) {
-          let base64str = await toBase64(document.querySelector('#documentMutiple').files[len])
+          let base64str = await toBase64(document.querySelector('#documentMultiple').files[len])
           console.log(base64str)
           base64str = base64str.split("base64,")
-          base64arr.push(base64str[1])
+          frontImage.push(base64str[1])
           len--
         }
       }
@@ -424,12 +358,12 @@ const Email = ({ match }) => {
     r["profile"] = '60c171dd74334f0fd274733c'
 
     let url = "http://192.168.0.104/"
+    console.log(base64arr)
+    while (frontImage.length) {
 
-    while (base64arr.length) {
-
-      console.log(base64arr.length)
-      r['document'] = base64arr[base64arr.length - 1]
-
+      console.log(frontImage.length)
+      r['document'] = frontImage[frontImage.length - 1]
+      console.log(r)
       let postData = new Promise((resolve, reject) => {
         axios.post(url, r, {
           headers: {
@@ -443,13 +377,12 @@ const Email = ({ match }) => {
             try {
               r["document"] != undefined ? docImage['front'] = r["document"] : null
               r["documentBack"] != undefined ? docImage['back'] = r["documentBack"] : null
+              r["face"] != undefined ? docImage['face'] = r["face"] : null
             } catch {
 
             }
             response['outputImage'] = docImage
           }
-
-
 
           Object.keys(response.data).map(parameters => {
 
@@ -459,25 +392,17 @@ const Email = ({ match }) => {
 
           })
 
-
-
-
           tableInfo['response'].push(response)
-
-
           console.log(tableInfo['response'])
           resolve()
-
-
         }).catch(function (error) {
-
           console.log(error)
           resolve()
         });
       })
 
       await postData.then(
-        base64arr.pop()
+        frontImage.pop()
       )
 
 
@@ -488,7 +413,6 @@ const Email = ({ match }) => {
 
 
   const pathName = path.split(':')[0];
-
 
   useEffect(() => {
 
@@ -506,7 +430,6 @@ const Email = ({ match }) => {
         source.push(info.id)
       })
 
-
       console.log(scanSetting)
       Object.keys(scanSetting).forEach(name => {
 
@@ -515,10 +438,7 @@ const Email = ({ match }) => {
             "parameters": name,
             "value": (
               <Select
-                style={{
-                  "width": "-webkit-fill-available"
-                }}
-
+                style={{ "width": "-webkit-fill-available" }}
                 defaultValue={source[0]}
               >
                 {source.map(ele => {
@@ -533,11 +453,10 @@ const Email = ({ match }) => {
           data.push({
             "parameters": name,
             "value": (
-              <Input size="middle" placeholder={scanSetting[name]} />
+              <Input size="middle" id={name} placeholder={scanSetting[name]} />
             )
           })
         }
-
       })
       console.log(data)
       setScanSetting({ ...scanSetting, profile: source[0] })
@@ -567,258 +486,199 @@ const Email = ({ match }) => {
         onCancel={closeMailComposr}
       >
         <Spin spinning={isMailEditorOpen.loading}>
-          <Tabs
-            defaultActiveKey="1"
-
-          >
+          <Tabs defaultActiveKey="1">
             <TabPane tab="Single" key="1">
               <BasicFormWrapper>
-
-
-
                 <Form style={{ width: '100%', position: "inherit", }} name="info" colon={false} >
-
-
-                  <Form.Item label=
-                    {
-                      <div>
-                        <h5 style={{ fontSize: "20px" }}>Front of Document</h5>
-                        <p>Please upload image of the document or enter url to remote document image.</p>
-                      </div>
-                    }>
-
-                    <Row align="middle" >
-
-                      <Col lg={8} md={9} xs={24}>
-                        <label htmlFor="name">Document Image - Front</label>
-                      </Col>
-                      <Col lg={16} md={15} xs={24}>
-
-                        <input type="file" id="document" className="form-control"></input>
-
-                      </Col>
-                    </Row>
-                  </Form.Item>
-                  <Form.Item label=
-                    {
-                      <div>
-                        <h5 style={{ fontSize: "20px" }}>Back of Document</h5>
-                        <p>To perform dual-side scan, supply image to back of the document.</p>
-                      </div>
-                    }>
-
-                    <Row align="middle" >
-
-                      <Col lg={8} md={9} xs={24}>
-                        <label htmlFor="name">Document Image - Back</label>
-                      </Col>
-                      <Col lg={16} md={15} xs={24}>
-
-                        <input type="file" id="documentBack" className="form-control"></input>
-
-                      </Col>
-                    </Row>
-                  </Form.Item>
-
+                  <Cards border headless>
+                    <Form.Item
+                      label={
+                        <div>
+                          <h5 style={{ fontSize: "20px" }}>Front of Document</h5>
+                          <p>Please upload image of the document.</p>
+                        </div>
+                      }>
+                      <CardStyleWrapper>
+                        <Cards border={false} headless>
+                          <Row justify="center">
+                            <input
+                              type="file"
+                              id="document"
+                              style={{ width: "100%" }}
+                            >
+                            </input>
+                          </Row>
+                        </Cards>
+                      </CardStyleWrapper>
+                    </Form.Item>
+                  </Cards>
+                  <Cards border headless>
+                    <Form.Item
+                      label={
+                        <div>
+                          <h5 style={{ fontSize: "20px" }}>Back of Document</h5>
+                          <p>To perform dual-side scan, supply image to back of the document.</p>
+                        </div>
+                      }>
+                      <CardStyleWrapper>
+                        <Cards border={false} headless>
+                          <Row justify="center">
+                            <input
+                              type="file"
+                              id="documentBack"
+                              style={{ width: "100%" }}
+                            >
+                            </input>
+                          </Row>
+                        </Cards>
+                      </CardStyleWrapper>
+                    </Form.Item>
+                  </Cards>
+                  <Cards border headless>
+                    <Form.Item
+                      label={
+                        <div>
+                          <h5 style={{ fontSize: "20px" }}>Face</h5>
+                          <p>To perform dual-side scan, supply image to face.</p>
+                        </div>
+                      }>
+                      <CardStyleWrapper>
+                        <Cards border={false} headless>
+                          <Row justify="center">
+                            <input
+                              type="file"
+                              id="face"
+                              style={{ width: "100%" }}
+                            >
+                            </input>
+                          </Row>
+                        </Cards>
+                      </CardStyleWrapper>
+                    </Form.Item>
+                  </Cards>
                 </Form>
               </BasicFormWrapper>
-              <div className="add-user-bottom text-left" style={{ paddingTop: "5%" }}>
-
-                <Button onClick={() => {
-                  scan('single')
-
-                }} htmlType="submit" type="primary">
-
+              <div className="add-user-bottom text-right">
+                <Button onClick={() => { scan('single') }} htmlType="submit" type="primary">
                   <Link to="#">Scan</Link>
-
                 </Button>
-
               </div>
-
             </TabPane>
             <TabPane tab="Mutiple" key="2">
               <BasicFormWrapper>
-
-
-
                 <Form style={{ width: '100%', position: "inherit", }} name="info" colon={false} >
-
-
-                  <Form.Item label=
-                    {
-                      <div>
-                        <h5 style={{ fontSize: "20px" }}>Front of Document</h5>
-                        <p>Please upload image of the document or enter url to remote document image.</p>
-                      </div>
-                    }>
-
-                    <Row align="middle" >
-
-                      <Col lg={8} md={9} xs={24}>
-                        <label htmlFor="name">Document Image - Front</label>
-                      </Col>
-                      <Col lg={16} md={15} xs={24}>
-
-                        <input type="file" id="documentMutiple" className="form-control" multiple></input>
-
-                      </Col>
-                    </Row>
-                  </Form.Item>
-
+                  <Cards border headless>
+                    <Form.Item label=
+                      {
+                        <div>
+                          <h5 style={{ fontSize: "20px" }}>Front of Document</h5>
+                          <p>Please upload images of the document.</p>
+                        </div>
+                      }>
+                      <CardStyleWrapper>
+                        <Cards border={false} headless>
+                          <Row justify="center">
+                            <input
+                              type="file"
+                              id="documentMultiple"
+                              style={{ width: "100%" }}
+                              multiple
+                            >
+                            </input>
+                          </Row>
+                        </Cards>
+                      </CardStyleWrapper>
+                    </Form.Item>
+                  </Cards>
                 </Form>
               </BasicFormWrapper>
-              <div className="add-user-bottom text-left" style={{ paddingTop: "5%" }}>
-
-                <Button onClick={() => {
-                  scan('mutiple')
-
-                }} htmlType="submit" type="primary">
-
+              <div className="add-user-bottom text-right" style={{ paddingTop: "5%" }}>
+                <Button onClick={() => { scan('mutiple') }} htmlType="submit" type="primary">
                   <Link to="#">Scan</Link>
-
                 </Button>
-
               </div>
-
             </TabPane>
-
-            <TabPane tab="setting" key="3">
+            <TabPane tab="Setting" key="3">
               <Table
                 className="table-responsive"
                 dataSource={scanDataSource}
-                columns={setClumns}
+                columns={setColumns}
                 pagination={false}
               />
             </TabPane>
-
-
           </Tabs>
         </Spin>
-
-
       </Modal >
 
       <Main>
         <EmailWrapper>
-          <Row className="justify-content-center" gutter={25} wrap={true}>
-            <Col className="trigger-col" xxl={5} xl={7} lg={8} xs={24}>
-              {responsive <= 991 && (
-                <Button type="link" className="mail-sidebar-trigger" style={{ marginTop: 0 }} onClick={toggleCollapsed}>
-                  <FeatherIcon icon={collapsed ? 'align-left' : 'align-right'} />
+          <Row gutter={25} wrap={true}>
+            <Col xxl={5} xl={7} lg={8} md={8} xs={24}>
+              <Cards headless>
+                <Button
+                  className="mb-25"
+                  onClick={toggleMailComposer}
+                  shape="round"
+                  type="primary"
+                  size="default"
+                  block>
+                  <FeatherIcon icon="plus" size={18} />Scan
                 </Button>
-              )}
-
-              {responsive > 991 ? (
-                <div className="mail-sideabr">
-
-                  <Cards headless>
-                    <div className="mail-sidebar-top">
-                      <Button onClick={toggleMailComposer} shape="round" type="primary" size="default" block>
-                        <FeatherIcon icon="plus" size={18} /> Scan - FullPage
-                      </Button>
-                    </div>
-
-                    <LogList />
-
-                  </Cards>
-                </div>
-              ) : (
-                <MailSideBar className={collapsed ? 'mail-sideabr show' : 'mail-sideabr hide'}>
-                  <Cards headless>
-                    <Button
-                      type="link"
-                      className="mail-sidebar-trigger trigger-close"
-                      style={{ marginTop: 0 }}
-                      onClick={toggleCollapsed}
-                    >
-                      <FeatherIcon icon="x" />
-                    </Button>
-                    <div className="mail-sidebar-top">
-                      <Button onClick={toggleMailComposer} shape="round" type="primary" size="default" block>
-                        Scan
-                      </Button>
-                    </div>
-
-                    <div className="mail-sidebar-bottom">
-                      <EmailNavbar path={pathName} toggleCollapsed={toggleCollapsed} />
-                    </div>
-                  </Cards>
-                </MailSideBar>
-              )}
+                <LogList />
+              </Cards>
             </Col>
-
-            <Col xxl={19} xl={17} lg={16}>
-              {resultTable == '' ? <></> :
+            <Col xxl={19} xl={17} lg={16} md={16} xs={24}>
+              {resultTable == '' ?
+                <>
+                  {/* <Cards headless >
+                </Cards> */}
+                </>
+                :
                 <Cards title="Response" border={false} size="default" >
                   <Row gutter={30} justify="center">
-
-                    <Col md={12}>
-
-
-                      <Carousel
-                        // afterChange={onChange}
-                        dotPosition={'bottom'}
-                        style={{
-                          textAlign: "-webkit-center",
-                          background: '#364d79',
-                          height: "350px",
-                          width: "500px"
-
-                        }}
-                      >
-
-                        {
-                          Object.keys(resultTable.documentImage).map((i, idx) => {
-                            return (
-                              <div>
-                                <ImageList index={idx} name={i} style={{
-                                  textAlign: "-webkit-center",
-                                }} />
-
-                              </div>
-                            )
-
-                          })
-                        }
-                        <div style={{ width: "300px", height: "500px", backgroundColor: '#000' }}>
-
-                        </div>
-                        <div style={{ width: "300px", height: "500px", backgroundColor: '#000' }}>
-
-                        </div>
-                      </Carousel>
-
-                      <Collapse defaultActiveKey={['1']} style={
-                        {
-                          marginTop: "3%"
-                        }
-                      }>
+                    <Col lg={12} md={24} sm={24} xs={24}>
+                      <Image.PreviewGroup>
+                        <Carousel
+                          // afterChange={onChange}
+                          dotPosition={'bottom'}
+                          infinite={false}
+                          style={{
+                            // textAlign: "-webkit-center",
+                            background: '#D2D2D2',
+                            marginBottom: "10px"
+                          }}
+                        >
+                          {
+                            Object.keys(resultTable.documentImage).map((i, idx) => {
+                              return (
+                                <div style={{ alignSelf: "center" }}>
+                                  <Image
+                                    key={idx}
+                                    preview={true}
+                                    src={`data:image/jpeg;base64,` + resultTable.documentImage[i]}
+                                  />
+                                </div>
+                              )
+                            })
+                          }
+                        </Carousel>
+                      </Image.PreviewGroup>
+                      <Collapse defaultActiveKey={['1']} style={{ marginBottom: "10px" }}>
                         <Panel header="Error" key="1">
                           <TableList name={'error'} />
                         </Panel>
                       </Collapse>
-
-
                     </Col>
-
-
-                    <Col md={7}>
-                      <Collapse defaultActiveKey={['1']}
-                      >
+                    <Col lg={12} md={24} sm={24} xs={24} >
+                      <Collapse defaultActiveKey={['1']}>
                         <Panel header="Result" key="1">
                           <TableList name={'result'} />
                         </Panel>
                       </Collapse>
                     </Col>
                   </Row>
-
-
                 </Cards>
               }
-
-
-
-
             </Col>
           </Row>
         </EmailWrapper>
