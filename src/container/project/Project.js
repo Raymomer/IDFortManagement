@@ -1,6 +1,6 @@
 import React, { lazy, useState, useEffect, Suspense, uselo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Row, Col, Spin, Select, Image, Table, Progress, Pagination, Tag } from 'antd';
+import { Row, Col, Tooltip, Spin, Collapse, Image, Table, Progress, Pagination, Carousel, Modal } from 'antd';
 import { Switch, NavLink, Route, Link } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
 import propTypes from 'prop-types';
@@ -19,7 +19,8 @@ import { PageHeader } from '../../components/page-headers/page-headers';
 
 // import TransactionResponse from './response.json'
 
-
+const { Panel } = Collapse;
+const supported_fields = ["documentNumber", "personalNumber", "firstName", "middleName", "lastName", "fullName", "firstNameLocal", "middleNameLocal", "lastNameLocal", "fullNameLocal", "dob", "expiry", "issued", "sex", "height", "weight", "address1", "address2", "postcode", "placeOfBirth", "documentType", "documentName", "vehicleClass", "restrictions", "issueAuthority", "stateFull", "stateShort", "countryIso2", "countryFull", "countryIso3", "nationalityIso2", "nationalityFull", "optionalData", "optionalData2", "customdata1", "customdata2", "customdata3", "customdata4", "customdata5", "trustlevel", "trustnote", "docupass_reference", "image", "imagehash"];
 
 const Project = ({ match }) => {
   const dispatch = useDispatch();
@@ -33,7 +34,9 @@ const Project = ({ match }) => {
 
   });
 
-
+  const closeMailComposr = () => {
+    setresultTable(null);
+  };
 
 
   const { notData, visible } = state;
@@ -49,24 +52,6 @@ const Project = ({ match }) => {
     });
   };
 
-  const onSorting = selectedItems => {
-    dispatch(sortingProjectByCategory(selectedItems));
-  };
-
-
-  const showModal = () => {
-    setState({
-      ...state,
-      visible: true,
-    });
-  };
-
-  const onCancel = () => {
-    setState({
-      ...state,
-      visible: false,
-    });
-  };
 
 
 
@@ -80,7 +65,134 @@ const Project = ({ match }) => {
 
   console.log('api =>', api)
 
+  const docColumns = [
+    {
+      title: 'Parameters',
+      dataIndex: 'parameters',
+      key: 'parameters',
+      render: (ele) => {
+        return (
+          <div style={{ display: "-webkit-inline-box" }}>
+            <span style={{ fontWeight: 800 }}>{ele}</span>
+          </div>
+        )
+      }
+    },
+    {
+      title: 'Value',
+      dataIndex: 'value',
+      key: 'value',
+      render: ([value, confidence]) => {
+        return (
+          <div style={{ display: "-webkit-inline-box" }}>
+            <span>{value}</span><span style={{
+              "fontSize": "9px",
+              "color": "#AAA",
+              "marginLeft": "8px"
+            }}>{confidence}</span>
+          </div >
+        )
+      }
+    },
+  ]
+
+  const warnColumns = [
+    {
+      width: "30%",
+      title: 'Parameters',
+      dataIndex: 'parameters',
+      key: 'parameters',
+      render: ([ele, discript]) => {
+        return (
+          <Tooltip title={discript}>
+            <div style={{
+              display: "-webkit-inline-box",
+              overflowWrap: "anywhere"
+            }}>
+              <span style={{ fontWeight: 800 }}>{ele}</span>
+            </div>
+          </Tooltip>
+        )
+      }
+    },
+    {
+      title: 'Value',
+      dataIndex: 'value',
+      key: 'value',
+      render: (confidence) => {
+        let number = parseInt(confidence * 100)
+        return (
+          <Progress
+            percent={number}
+            style={{ marginBottom: '15px' }}
+            strokeColor={{
+              '0%': '#FF3030',
+              '100%': '#FF3030',
+            }}
+            status={number === 100 ? 'exception' : null
+            }
+          />
+        )
+      }
+    },
+  ]
   const [transactionResponse, setTransactionResponse] = useState(``)
+
+  const [resultTable, setresultTable] = useState(null)
+
+  const TableList = ({ name }) => {
+
+    let source = []
+    switch (name) {
+      case 'result': {
+        Object.keys(resultTable.data).map(parameters => {
+          resultTable.data[parameters].filter(i => i.index == 0).map(res => {
+            if (supported_fields.includes(parameters)) {
+              source.push(
+                {
+                  "parameters": parameters,
+                  "value": [res.value, res.confidence]
+                }
+              );
+            }
+          })
+        })
+        return (
+          <Table
+            className="table-responsive"
+            pagination={false}
+            dataSource={source}
+            columns={docColumns}
+            showHeader={false} />
+        )
+
+      }
+      case 'error': {
+        if (resultTable.warning == undefined || resultTable.warning.length == 0) {
+          return null
+        }
+        resultTable.warning.forEach(parameters => {
+          console.log(parameters)
+          source.push({
+            "parameters": [parameters.code, parameters.description],
+            "value": parameters.confidence
+          })
+
+        })
+        console.log(source)
+
+        return (
+          <Table
+            className="table-responsive"
+            pagination={false}
+            dataSource={source}
+            columns={warnColumns}
+            showHeader={false} />
+        )
+      }
+    }
+  }
+
 
   const getResponse = async () => {
 
@@ -126,7 +238,9 @@ const Project = ({ match }) => {
         action: (
           <div className="table-actions">
             <Button className="btn-icon" type="info" to="#" shape="circle" onClick={() => {
-              console.log("click")
+
+              console.log(element)
+              setresultTable(element)
             }}>
               <FeatherIcon icon="edit" size={16} />
             </Button>
@@ -142,11 +256,6 @@ const Project = ({ match }) => {
     setTransactionResponse(r)
 
   }
-
-
-
-
-
 
 
 
@@ -203,7 +312,9 @@ const Project = ({ match }) => {
           subTitle={<>Manage documents and identity information
             </>}
           buttons={[
-            <Button onClick={showModal} key="1" type="primary" size="default">
+            <Button onClick={() => {
+              console.log("now project")
+            }} key="1" type="primary" size="default">
               <FeatherIcon icon="plus" size={16} />Scan
 
             </Button>
@@ -243,17 +354,8 @@ const Project = ({ match }) => {
 
                 </div>
                 <div className="project-sort-group">
-                  <div className="sort-group">
-                    <span>Calender</span>
-                    {/* <div className="layout-style">
-                      <NavLink to={`${ path } /grid`}>
-                          < FeatherIcon icon = "grid" size = { 16} />
-                                            </NavLink >
-                        <NavLink to={`${path}/list`}>
-                          <FeatherIcon icon="list" size={16} />
-                        </NavLink>
-                    </div > */}
-                  </div >
+
+
                 </div >
 
 
@@ -295,19 +397,67 @@ const Project = ({ match }) => {
               </Row>
             </div>
           </Col >
-          {/* <Col xs={24} className="pb-30">
+          {resultTable != null ? <Modal
+            type={`primary`}
+            footer={null}
+            visible={resultTable != null ? true : false}
+            onCancel={closeMailComposr}
+            width={'80%'}
+          >
+            <Col xxl={19} xl={17} lg={16} md={16} xs={24}>
 
+              <Cards title="Response" border={false} size="default" >
+                <Row gutter={30} justify="center">
+                  <Col lg={12} md={24} sm={24} xs={24}>
 
-            <Pagination
+                    <Carousel
+                      // afterChange={onChange}
+                      dotPosition={'bottom'}
+                      infinite={false}
+                      style={{
+                        // textAlign: "-webkit-center",
+                        background: '#D2D2D2',
+                        marginBottom: "10px"
+                      }}
+                    >
+                      {
 
-              total={transactionResponse.total}
-              showSizeChanger
-            />
+                        Object.keys(resultTable.outputImage).map((i, idx) => {
+                          return (
+                            <div style={{ alignSelf: "center" }}>
+                              <Image
+                                key={idx}
+                                preview={true}
+                                src={'https://192.168.0.104/imagevault/' + resultTable.outputImage[i]}
+                              />
+                            </div>
+                          )
+                        })
+                      }
+                    </Carousel>
 
+                    <Collapse defaultActiveKey={['1']} style={{ marginBottom: "10px" }}>
+                      <Panel header="Error" key="1">
+                        <TableList name={'error'} />
+                      </Panel>
+                    </Collapse>
+                  </Col>
+                  <Col lg={12} md={24} sm={24} xs={24} >
+                    <Collapse defaultActiveKey={['1']}>
+                      <Panel header="Result" key="1">
+                        <TableList name={'result'} />
+                      </Panel>
+                    </Collapse>
+                  </Col>
+                </Row>
+              </Cards>
 
-          </Col> */}
+            </Col>
+          </Modal >
+
+            : null}
+
         </Row >
-        <CreateProject onCancel={onCancel} visible={visible} />
       </Main >
     </>
   );
