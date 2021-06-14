@@ -1,20 +1,25 @@
-import React, { useState, useLayoutEffect, useEffect } from 'react';
-import { Row, Col, Spin, Form, Table, Carousel, Collapse, Image, Tabs, Progress, Tooltip, Upload, Layout, Input, Select, message } from 'antd';
+import React, { Suspense, useState, useLayoutEffect, useEffect, lazy } from 'react';
+import { Row, Col, Spin, Form, Table, Carousel, Skeleton, Collapse, Image, Tabs, Progress, Tooltip, Upload, Layout, Input, Select, message } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import axios from 'axios'
 import { render } from '@testing-library/react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink, Route, useHistory } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
 import propTypes from 'prop-types';
 import { EmailWrapper } from './overview/style';
 import { BasicFormWrapper, Main } from '../styled';
+import { GalleryCard } from '../pages/style';
+
 import { CardStyleWrapper } from '../ui-elements/ui-elements-styled';
 
 import { PageHeader } from '../../components/page-headers/page-headers';
 import { Cards } from '../../components/cards/frame/cards-frame';
 import { Button } from '../../components/buttons/buttons';
 import { Modal } from '../../components/modals/antd-modals';
+import Heading from '../../components/heading/heading';
 
+
+const GalleryCards = lazy(() => import('../pages/overview/GalleryCard'));
 
 const { TabPane } = Tabs;
 const { Panel } = Collapse;
@@ -23,6 +28,11 @@ const { Dragger } = Upload;
 
 
 const Email = ({ match }) => {
+  console.log(match)
+  const history = useHistory()
+
+  console.log(history)
+
   const [isMailEditorOpen, setMailEditorStatus] = useState({
     editor: false,
     loading: false
@@ -30,6 +40,7 @@ const Email = ({ match }) => {
 
   const [scanSetting, setScanSetting] = useState({
     "profile": "",
+    "face": "",
     "verifyName": "",
     "verifyDob": "",
     "verifyAge": "",
@@ -171,7 +182,7 @@ const Email = ({ match }) => {
 
     const columns = [
       {
-        title: "Log",
+        title: "Transaction ID",
         dataIndex: 'transactionId',
         key: 'transactionId',
         align: "center",
@@ -355,9 +366,9 @@ const Email = ({ match }) => {
       }
     }
 
-    r["profile"] = '60c171dd74334f0fd274733c'
+    r["profile"] = '60c6b587450f25aa534c258a'
 
-    let url = "http://192.168.0.104/"
+    let url = "https://192.168.0.104/transaction"
     console.log(base64arr)
     while (frontImage.length) {
 
@@ -367,7 +378,7 @@ const Email = ({ match }) => {
       let postData = new Promise((resolve, reject) => {
         axios.post(url, r, {
           headers: {
-            Authorization: "Apikey xDojvTLsDYueA7/WTkh27vKRob/b7sFtY2IIQM7uQC8=",
+            Authorization: "Bearer KTYUTnlX6pFB2tOHva7jhxbi4PvGAHLIx5Q0dGEalVE=",
           }
         }).then(function (res) {
           let response = res.data
@@ -375,14 +386,15 @@ const Email = ({ match }) => {
           console.log(response['outputImage'])
           if (response['outputImage'] == undefined) {
             try {
-              r["document"] != undefined ? docImage['front'] = r["document"] : null
-              r["documentBack"] != undefined ? docImage['back'] = r["documentBack"] : null
-              r["face"] != undefined ? docImage['face'] = r["face"] : null
+              r["document"] != undefined ? docImage['front'] = "data:image/png;base64," + r["document"] : null
+              r["documentBack"] != undefined ? docImage['back'] = "data:image/png;base64," + r["documentBack"] : null
+              r["face"] != undefined ? docImage['face'] = "data:image/png;base64," + r["face"] : null
             } catch {
 
             }
             response['outputImage'] = docImage
           }
+          response['scanTime'] = new Date().toLocaleDateString()
 
           Object.keys(response.data).map(parameters => {
 
@@ -420,7 +432,7 @@ const Email = ({ match }) => {
     let url = "https://192.168.0.104/profile"
     axios.get(url, {
       headers: {
-        Authorization: "Apikey xDojvTLsDYueA7/WTkh27vKRob/b7sFtY2IIQM7uQC8=",
+        Authorization: "Bearer KTYUTnlX6pFB2tOHva7jhxbi4PvGAHLIx5Q0dGEalVE=",
       }
     }).then(profileList => {
       let source = []
@@ -453,7 +465,7 @@ const Email = ({ match }) => {
           data.push({
             "parameters": name,
             "value": (
-              <Input size="middle" id={name} placeholder={scanSetting[name]} />
+              <Input size="middle" placeholder={scanSetting[name]} />
             )
           })
         }
@@ -470,20 +482,48 @@ const Email = ({ match }) => {
 
   }, [])
 
-  console.log(scanSetting)
 
+  useEffect(() => {
+    if (history.location.state != null) {
+      setTable(history.location.state.tableInfo)
+    }
+  }, [history])
+
+  console.log(scanSetting)
+  console.log(resultTable)
   return (
 
     <>
       <PageHeader
         ghost
-        title={`Scan`}
+        title={
+
+          <div style={{ display: "inline-flex" }}>
+            <p>Scan</p>
+            <Button
+              className="mb-25"
+              style={{
+                justifyContent: "right",
+                border: "dashed",
+                width: "auto"
+              }}
+              onClick={toggleMailComposer}
+              transparented
+              type="light"
+              size="default"
+              block>
+              <FeatherIcon icon="plus" size={18} />Upload
+            </Button>
+          </div>
+
+        }
       />
       <Modal
         type={`primary`}
         footer={null}
         visible={isMailEditorOpen.editor}
         onCancel={closeMailComposr}
+        style={{ height: "500px" }}
       >
         <Spin spinning={isMailEditorOpen.loading}>
           <Tabs defaultActiveKey="1">
@@ -556,6 +596,7 @@ const Email = ({ match }) => {
                       </CardStyleWrapper>
                     </Form.Item>
                   </Cards>
+
                 </Form>
               </BasicFormWrapper>
               <div className="add-user-bottom text-right">
@@ -600,6 +641,8 @@ const Email = ({ match }) => {
             </TabPane>
             <TabPane tab="Setting" key="3">
               <Table
+                style={{ height: "600px" }}
+                scroll={{ y: 500 }}
                 className="table-responsive"
                 dataSource={scanDataSource}
                 columns={setColumns}
@@ -611,77 +654,69 @@ const Email = ({ match }) => {
       </Modal >
 
       <Main>
-        <EmailWrapper>
-          <Row gutter={25} wrap={true}>
-            <Col xxl={5} xl={7} lg={8} md={8} xs={24}>
-              <Cards headless>
-                <Button
-                  className="mb-25"
-                  onClick={toggleMailComposer}
-                  shape="round"
-                  type="primary"
-                  size="default"
-                  block>
-                  <FeatherIcon icon="plus" size={18} />Scan
-                </Button>
-                <LogList />
-              </Cards>
-            </Col>
-            <Col xxl={19} xl={17} lg={16} md={16} xs={24}>
-              {resultTable == '' ?
-                <>
-                  {/* <Cards headless >
-                </Cards> */}
-                </>
-                :
-                <Cards title="Response" border={false} size="default" >
-                  <Row gutter={30} justify="center">
-                    <Col lg={12} md={24} sm={24} xs={24}>
-                      <Image.PreviewGroup>
-                        <Carousel
-                          // afterChange={onChange}
-                          dotPosition={'bottom'}
-                          infinite={false}
-                          style={{
-                            // textAlign: "-webkit-center",
-                            background: '#D2D2D2',
-                            marginBottom: "10px"
-                          }}
-                        >
-                          {
-                            Object.keys(resultTable.documentImage).map((i, idx) => {
-                              return (
-                                <div style={{ alignSelf: "center" }}>
-                                  <Image
-                                    key={idx}
-                                    preview={true}
-                                    src={`data:image/jpeg;base64,` + resultTable.documentImage[i]}
-                                  />
+
+
+
+
+
+        {tableInfo == '' ?
+          <></> :
+          <Main>
+            <Row gutter={25}>
+
+              {
+                tableInfo.response.map((res, id) => {
+                  console.log(res)
+                  return (
+                    <Col key={id} xxl={6} lg={8} sm={12} xs={24} >
+                      <Suspense
+                        fallback={
+                          <Cards headless>
+                            <Skeleton active />
+                          </Cards>
+                        }
+                      >
+                        <GalleryCard style={{ marginBottom: '25px' }}>
+                          <NavLink to={{ pathname: "/admin/main/chat/", query: { tableInfo, index: id } }} >
+                            <figure>
+
+
+                              <div style={{
+                                height: "250px",
+                                width: "90%",
+                                margin: "auto",
+                                backgroundImage: `url(${res.outputImage['front']})`,
+                                backgroundPosition: "center",
+                                backgroundSize: "contain",
+                                backgroundAttachment: "local",
+                                backgroundRepeat: "no-repeat"
+                              }}>
+                              </div>
+                              {/* <img style={{ width: '50%' }} src={res.outputImage['front']} alt="" /> */}
+                              <figcaption>
+                                <div className="gallery-single-content">
+                                  <Heading className="gallery-single-title" as="h4">
+                                    <p>Scan time : <span style={{ color: '#000' }}>{res.scanTime}</span></p>
+                                    <p>decision : <span style={{ color: '#000' }}>{res.decision}</span></p>
+                                  </Heading>
+
                                 </div>
-                              )
-                            })
-                          }
-                        </Carousel>
-                      </Image.PreviewGroup>
-                      <Collapse defaultActiveKey={['1']} style={{ marginBottom: "10px" }}>
-                        <Panel header="Error" key="1">
-                          <TableList name={'error'} />
-                        </Panel>
-                      </Collapse>
+                              </figcaption>
+                            </figure>
+                          </NavLink>
+                        </GalleryCard>
+                      </Suspense>
                     </Col>
-                    <Col lg={12} md={24} sm={24} xs={24} >
-                      <Collapse defaultActiveKey={['1']}>
-                        <Panel header="Result" key="1">
-                          <TableList name={'result'} />
-                        </Panel>
-                      </Collapse>
-                    </Col>
-                  </Row>
-                </Cards>
+                  )
+                })
               }
-            </Col>
-          </Row>
-        </EmailWrapper>
+
+
+            </Row>
+          </Main>
+
+        }
+
       </Main>
     </>
   );
