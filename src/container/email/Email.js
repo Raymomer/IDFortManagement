@@ -333,13 +333,14 @@ const Email = ({ match }) => {
     let r = {}
     let base64arr
     let frontImage = []
+    console.log(document.querySelector('#document').files)
     if (name == 'single') {
       if (document.querySelector('#document').files.length > 0) {
         let base64str = await toBase64(document.querySelector('#document').files[0])
         base64str = base64str.split("base64,")
 
         console.log(base64str)
-        frontImage.push(base64str[1])
+        frontImage.push({ fileName: document.querySelector('#document').files[0].name, image: base64str[1] })
       }
 
       if (document.querySelector('#documentBack').files.length > 0) {
@@ -360,7 +361,8 @@ const Email = ({ match }) => {
           let base64str = await toBase64(document.querySelector('#documentMultiple').files[len])
           console.log(base64str)
           base64str = base64str.split("base64,")
-          frontImage.push(base64str[1])
+          frontImage.push({ fileName: document.querySelector('#documentMultiple').files[len].name, image: base64str[1] })
+
           len--
         }
       }
@@ -371,9 +373,9 @@ const Email = ({ match }) => {
     let url = "https://192.168.0.104/transaction"
     console.log(base64arr)
     while (frontImage.length) {
-
+      let name = frontImage[frontImage.length - 1].fileName
       console.log(frontImage.length)
-      r['document'] = frontImage[frontImage.length - 1]
+      r['document'] = frontImage[frontImage.length - 1].image
       console.log(r)
       let postData = new Promise((resolve, reject) => {
         axios.post(url, r, {
@@ -393,16 +395,25 @@ const Email = ({ match }) => {
 
             }
             response['outputImage'] = docImage
+          } else {
+            Object.keys(response['outputImage']).map(ele => {
+              let str = response['outputImage'][ele].slice(0, 15)
+              if (!str.includes('http')) {
+                response['outputImage'][ele] = "data:image/png;base64," + response['outputImage'][ele]
+              }
+            })
           }
+
           response['scanTime'] = new Date().toLocaleDateString()
+          response['name'] = name
 
-          Object.keys(response.data).map(parameters => {
+          // Object.keys(response.data).map(parameters => {
 
-            if (!supported_fields.includes(parameters)) {
-              delete response.data[parameters]
-            }
+          //   if (!supported_fields.includes(parameters)) {
+          //     delete response.data[parameters]
+          //   }
 
-          })
+          // })
 
           tableInfo['response'].push(response)
           console.log(tableInfo['response'])
@@ -485,7 +496,7 @@ const Email = ({ match }) => {
 
   useEffect(() => {
     if (history.location.state != null) {
-      setTable(history.location.state.tableInfo)
+      setTable(history.location.state)
     }
   }, [history])
 
@@ -496,28 +507,9 @@ const Email = ({ match }) => {
     <>
       <PageHeader
         ghost
-        title={
-
-          <div style={{ display: "inline-flex" }}>
-            <p>Scan</p>
-            <Button
-              className="mb-25"
-              style={{
-                justifyContent: "right",
-                border: "dashed",
-                width: "auto"
-              }}
-              onClick={toggleMailComposer}
-              transparented
-              type="light"
-              size="default"
-              block>
-              <FeatherIcon icon="plus" size={18} />Upload
-            </Button>
-          </div>
-
-        }
+        title={`Scan`}
       />
+
       <Modal
         type={`primary`}
         footer={null}
@@ -654,7 +646,19 @@ const Email = ({ match }) => {
       </Modal >
 
       <Main>
-
+        <Button
+          style={{
+            marginLeft: "5px",
+            marginBottom: "15px",
+            width: "auto"
+          }}
+          onClick={toggleMailComposer}
+          transparented
+          type="primary"
+          size="default"
+          block>
+          <FeatherIcon icon="plus" size={18} />Upload
+        </Button>
 
 
 
@@ -663,7 +667,6 @@ const Email = ({ match }) => {
           <></> :
           <Main>
             <Row gutter={25}>
-
               {
                 tableInfo.response.map((res, id) => {
                   console.log(res)
@@ -677,29 +680,35 @@ const Email = ({ match }) => {
                         }
                       >
                         <GalleryCard style={{ marginBottom: '25px' }}>
-                          <NavLink to={{ pathname: "/admin/main/chat/", query: { tableInfo, index: id } }} >
+                          <NavLink to={{ pathname: "/admin/main/chat/private", state: { data: tableInfo.response, index: id } }} >
                             <figure>
 
 
                               <div style={{
                                 height: "250px",
-                                width: "90%",
                                 margin: "auto",
                                 backgroundImage: `url(${res.outputImage['front']})`,
                                 backgroundPosition: "center",
-                                backgroundSize: "contain",
+                                backgroundSize: "cover",
                                 backgroundAttachment: "local",
-                                backgroundRepeat: "no-repeat"
+                                backgroundRepeat: "no-repeat",
+                                borderRadius: "5px"
+
                               }}>
                               </div>
                               {/* <img style={{ width: '50%' }} src={res.outputImage['front']} alt="" /> */}
                               <figcaption>
                                 <div className="gallery-single-content">
                                   <Heading className="gallery-single-title" as="h4">
-                                    <p>Scan time : <span style={{ color: '#000' }}>{res.scanTime}</span></p>
-                                    <p>decision : <span style={{ color: '#000' }}>{res.decision}</span></p>
+                                    {res.name}
                                   </Heading>
-
+                                  {/* <span>{res.scanTime}</span></p> */}
+                                  <div>
+                                    <p>Decision : <span style={{ color: '#000' }}>{res.decision}</span>&emsp;
+                                      Statue : <span style={{ color: '#000' }}>{res.data.countryFull[0].value}</span>&emsp;
+                                    </p>
+                                    <p>TranscationID : </p>{res.transactionId}<p style={{ textAlign: "right" }}>{res.scanTime}</p>
+                                  </div>
                                 </div>
                               </figcaption>
                             </figure>
