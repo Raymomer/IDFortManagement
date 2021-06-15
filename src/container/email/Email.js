@@ -39,8 +39,7 @@ const Email = ({ match }) => {
   });
 
   const [scanSetting, setScanSetting] = useState({
-    "profile": "",
-    "face": "",
+    "profile": [],
     "verifyName": "",
     "verifyDob": "",
     "verifyAge": "",
@@ -52,7 +51,7 @@ const Email = ({ match }) => {
     "customData": ""
   })
 
-  const [scanDataSource, setScanDataSource] = useState("")
+  const [scanDataSource, setScanDataSource] = useState(null)
 
   const [state, setState] = useState({
     responsive: 0,
@@ -98,132 +97,12 @@ const Email = ({ match }) => {
   const [resultTable, setresultTable] = useState(``)
   console.log(tableInfo)
 
-  const takeDataSource = (response) => {
-    console.log(response)
-    let source = []
-
-
-    response['response'].map((element, idx) => {
-      source.push({ "transactionId": element })
-    })
-
-    return source
-  }
-
-  const showResult = (result) => {
-    console.log("transactionId => ", result['transactionId'])
-    let r = {}
-    r['response'] = result
-    r['documentImage'] = result['outputImage']
-    setresultTable(r)
-
-  }
 
 
   const supported_fields = ["documentNumber", "personalNumber", "firstName", "middleName", "lastName", "fullName", "firstNameLocal", "middleNameLocal", "lastNameLocal", "fullNameLocal", "dob", "expiry", "issued", "sex", "height", "weight", "address1", "address2", "postcode", "placeOfBirth", "documentType", "documentName", "vehicleClass", "restrictions", "issueAuthority", "stateFull", "stateShort", "countryIso2", "countryFull", "countryIso3", "nationalityIso2", "nationalityFull", "optionalData", "optionalData2", "customdata1", "customdata2", "customdata3", "customdata4", "customdata5", "trustlevel", "trustnote", "docupass_reference", "image", "imagehash"];
 
-  const TableList = ({ name }) => {
-
-    console.log(scanSetting)
-    let source = []
-    switch (name) {
-      case 'result': {
-        Object.keys(resultTable.response.data).map(parameters => {
-          resultTable.response.data[parameters].filter(i => i.index == 0).map(res => {
-            if (supported_fields.includes(parameters)) {
-              source.push(
-                {
-                  "parameters": parameters,
-                  "value": [res.value, res.confidence]
-                }
-              );
-            }
-          })
-        })
-        return (
-          <Table
-            className="table-responsive"
-            pagination={false}
-            dataSource={source}
-            columns={docColumns}
-            showHeader={false} />
-        )
-
-      }
-      case 'error': {
-        if (resultTable.response.warning == undefined || resultTable.response.warning.length == 0) {
-          return null
-        }
-        resultTable.response.warning.forEach(parameters => {
-          console.log(parameters)
-          source.push({
-            "parameters": [parameters.code, parameters.description],
-            "value": parameters.confidence
-          })
-
-        })
-        console.log(source)
-
-        return (
-          <Table
-            className="table-responsive"
-            pagination={false}
-            dataSource={source}
-            columns={warnColumns}
-            showHeader={false} />
-        )
-      }
-    }
-  }
 
 
-
-  const LogList = () => {
-
-    const columns = [
-      {
-        title: "Transaction ID",
-        dataIndex: 'transactionId',
-        key: 'transactionId',
-        align: "center",
-        render: (ele) => {
-          return (
-            <Button
-              className="btn-icon btn-outlined"
-              size="default"
-              outlined
-              type="light"
-              style={{ width: "-webkit-fill-available" }}
-              onClick={() => {
-                showResult(ele)
-              }}
-            >
-              {/* <FeatherIcon icon="layers" /> */}
-              {ele['transactionId']}
-            </Button>
-          )
-        }
-      }
-    ]
-
-
-    let dataSource = takeDataSource(tableInfo)
-
-    console.log(dataSource, columns)
-
-    return (
-      <Table
-        className="table-responsive"
-        dataSource={dataSource}
-        columns={columns}
-        tableLayout={'fixed'}
-        pagination={{ pageSize: 10, position: ['bottomCenter'] }}
-        onRow={(record, rewIndex) => {
-          console.log(record, rewIndex)
-        }}
-      />
-    )
-  }
 
 
   const docColumns = [
@@ -297,25 +176,7 @@ const Email = ({ match }) => {
       }
     },
   ]
-  const setColumns = [
-    {
-      title: 'Parameters',
-      dataIndex: 'parameters',
-      key: 'parameters',
-      align: "center",
-      render: (ele) => {
-        return (
-          <span>{ele.replace(/^./, ele[0].toUpperCase())}</span> // 首字轉大寫
-        )
-      }
-    },
-    {
-      title: 'Value',
-      align: "center",
-      dataIndex: 'value',
-      key: 'value'
-    },
-  ]
+
 
   const toBase64 = file => new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -326,7 +187,7 @@ const Email = ({ match }) => {
 
 
   const scan = async (name) => {
-
+    console.log(scanDataSource)
     setMailEditorStatus({ ...isMailEditorOpen, loading: true })
     console.log("Start to Scan")
 
@@ -368,7 +229,7 @@ const Email = ({ match }) => {
       }
     }
 
-    r["profile"] = '60c6b587450f25aa534c258a'
+    // r["profile"] = '60c6b587450f25aa534c258a'
 
     let url = "https://192.168.0.104/transaction"
     console.log(base64arr)
@@ -378,7 +239,7 @@ const Email = ({ match }) => {
       r['document'] = frontImage[frontImage.length - 1].image
       console.log(r)
       let postData = new Promise((resolve, reject) => {
-        axios.post(url, r, {
+        axios.post(url, { ...r, ...scanDataSource }, {
           headers: {
             Authorization: "Bearer KTYUTnlX6pFB2tOHva7jhxbi4PvGAHLIx5Q0dGEalVE=",
           }
@@ -407,13 +268,6 @@ const Email = ({ match }) => {
           response['scanTime'] = new Date().toLocaleDateString()
           response['name'] = name
 
-          // Object.keys(response.data).map(parameters => {
-
-          //   if (!supported_fields.includes(parameters)) {
-          //     delete response.data[parameters]
-          //   }
-
-          // })
 
           tableInfo['response'].push(response)
           console.log(tableInfo['response'])
@@ -453,38 +307,11 @@ const Email = ({ match }) => {
         source.push(info.id)
       })
 
-      console.log(scanSetting)
-      Object.keys(scanSetting).forEach(name => {
+      console.log(source)
 
-        if (name == "profile") {
-          data.push({
-            "parameters": name,
-            "value": (
-              <Select
-                style={{ "width": "-webkit-fill-available" }}
-                defaultValue={source[0]}
-              >
-                {source.map(ele => {
-                  return (
-                    <Option value={ele}>{ele}</Option>
-                  )
-                })}
-              </Select>
-            )
-          })
-        } else {
-          data.push({
-            "parameters": name,
-            "value": (
-              <Input size="middle" placeholder={scanSetting[name]} />
-            )
-          })
-        }
-      })
       console.log(data)
-      setScanSetting({ ...scanSetting, profile: source[0] })
-      setScanDataSource(data)
-
+      setScanSetting({ ...scanSetting, profile: source })
+      setScanDataSource({ "profile": source[0] })
     }).catch(err => {
       console.log(err)
     })
@@ -492,6 +319,73 @@ const Email = ({ match }) => {
 
 
   }, [])
+
+  const saveSetting = (e) => {
+    console.log(e.target.id)
+    console.log(e.target.value)
+
+    let dic = {}
+    dic[e.target.id] = e.target.value
+    setScanDataSource({ ...scanDataSource, ...dic })
+
+  }
+
+  const SettingList = () => {
+    return (
+      <>
+
+        {
+          Object.keys(scanSetting).map((u, i) => {
+            console.log(u)
+
+            if (u == "profile") {
+              console.log(scanSetting[u])
+
+              return (
+
+                <Form.Item
+                  key={u}
+                  label={u}
+                  name={u}>
+                  <Select
+                    id={u}
+                    placeholder={scanSetting[u][0]}
+                    defaultValue={scanSetting[u][0]}
+                    onChange={(value) => {
+                      console.log(u, value)
+                    }}
+                  >
+                    {scanSetting[u].map(num => {
+                      return (
+                        <Option value={num}>{num}</Option>
+                      )
+                    })}
+
+                  </Select>
+                </Form.Item>
+              )
+            }
+
+            else {
+              return (
+
+                <Form.Item
+                  key={u}
+                  label={u + ": "}
+                  name={u}>
+                  <Input
+                    id={u}
+                    onPressEnter={saveSetting}
+                    placeholder={scanSetting[u]} />
+                </Form.Item>
+
+              )
+
+            }
+          })
+        }
+      </>)
+  }
 
 
   useEffect(() => {
@@ -631,15 +525,11 @@ const Email = ({ match }) => {
                 </Button>
               </div>
             </TabPane>
-            <TabPane tab="Setting" key="3">
-              <Table
-                style={{ height: "600px" }}
-                scroll={{ y: 500 }}
-                className="table-responsive"
-                dataSource={scanDataSource}
-                columns={setColumns}
-                pagination={false}
-              />
+            <TabPane tab="Setting" key="3" >
+
+              <Form name="info" layout="vertical" >
+                <SettingList />
+              </Form>
             </TabPane>
           </Tabs>
         </Spin>
