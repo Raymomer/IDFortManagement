@@ -572,15 +572,8 @@ const ChatSidebar = Styled.div`
       }
     }
   }
-  @media only screen and (max-width: 991px){
-    max-width: 370px;
-    margin: 0 auto 40px;
-  }
-  @media only screen and (max-width: 575px){
-    min-height: 580px;
-  }
   .ant-card-body{
-    padding: 28px 0 !important;
+    padding: 28px 20px !important;
   }
   .chatbox-search{
     padding: 0 25px;
@@ -610,11 +603,10 @@ const ChatSidebar = Styled.div`
     }
     ul{
       margin: 0 0 12px 0;
-      padding: 30px 0 0 0;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      justify-content: space-between;
+      justify-content: space-around;
       border-bottom: 1px solid ${({ theme }) => theme['border-color-light']};
       @media (max-width: 480px){
         flex-direction: column;

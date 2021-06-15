@@ -1,7 +1,7 @@
 import React, { useState, lazy, Suspense } from 'react';
 import { Row, Col, Badge, Skeleton } from 'antd';
 import { useSelector } from 'react-redux';
-import { Switch, Route, NavLink } from 'react-router-dom';
+import { Switch, Route, NavLink, useHistory, Link } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
 import PropTypes from 'prop-types';
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -15,41 +15,21 @@ import { Button } from '../../components/buttons/buttons';
 import { Cards } from '../../components/cards/frame/cards-frame';
 import { PageHeader } from '../../components/page-headers/page-headers';
 
-import { ShareButtonPageHeader } from '../../components/buttons/share-button/share-button';
-import { ExportButtonPageHeader } from '../../components/buttons/export-button/export-button';
-import { CalendarButtonPageHeader } from '../../components/buttons/calendar-button/calendar-button';
 
 const SingleChat = lazy(() => import('./overview/singleChat'));
 const SingleGroup = lazy(() => import('./overview/SingleGroupChat'));
 
 const ChatApp = ({ match }) => {
-  const { rtl, searchData } = useSelector(state => {
-    return {
-      rtl: state.ChangeLayoutMode.rtlData,
-      searchData: state.headerSearchData,
-    };
-  });
-  const left = !rtl ? 'left' : 'right';
-  const [state, setState] = useState({
-    search: searchData,
-    me: 'woadud@gmail.com',
-  });
-
-  const { notData } = state;
-
-  const patternSearch = searchText => {
-    const data = searchData.filter(item => item.title.toUpperCase().startsWith(searchText.toUpperCase()));
-    setState({
-      ...state,
-      search: data,
-    });
-  };
+  const history = useHistory();
+  const result = history.location.state.data;
+  const index = history.location.state.index;
+  const data = result[index];
 
   const renderView = ({ style, ...props }) => {
     const customStyle = {
       marginRight: 'auto',
-      [rtl ? 'left' : 'right']: '2px',
-      [rtl ? 'marginLeft' : 'marginRight']: '-19px',
+      right: '2px',
+      marginRight: '-19px',
     };
     return <div {...props} style={{ ...style, ...customStyle }} />;
   };
@@ -58,7 +38,7 @@ const ChatApp = ({ match }) => {
     const thumbStyle = {
       borderRadius: 6,
       backgroundColor: '#F1F2F6',
-      [left]: '2px',
+      right: '2px',
     };
     return <div style={{ ...style, ...thumbStyle }} props={props} />;
   };
@@ -69,7 +49,7 @@ const ChatApp = ({ match }) => {
       width: '6px',
       transition: 'opacity 200ms ease 0s',
       opacity: 0,
-      [rtl ? 'left' : 'right']: '6px',
+      right: '6px',
       bottom: '2px',
       top: '2px',
       borderRadius: '3px',
@@ -85,19 +65,19 @@ const ChatApp = ({ match }) => {
     return <div style={{ ...style, ...thumbStyle }} props={props} />;
   };
 
+  const goBack = () => {
+    history.replace('/admin/email/inbox', { "response": result });
+  }
+
   return (
     <>
       <PageHeader
         ghost
-        title="Chat"
+        title="Result"
         buttons={[
           <div key="1" className="page-header-actions">
-            <CalendarButtonPageHeader />
-            <ExportButtonPageHeader />
-            <ShareButtonPageHeader />
-            <Button size="small" type="primary">
-              <FeatherIcon icon="plus" size={14} />
-              Add New
+            <Button size="small" type="primary" onClick={goBack}>
+              Back
             </Button>
           </div>,
         ]}
@@ -105,29 +85,48 @@ const ChatApp = ({ match }) => {
 
       <Main>
         <Row gutter={30}>
-          <Col xxl={7} lg={10} xs={24}>
+          <Col xxl={13} lg={12} xs={9}>
             <ChatSidebar>
               <Cards headless>
-                <div className="chatbox-search">
-                  <AutoComplete onSearch={patternSearch} dataSource={notData} width="100%" patterns />
-                </div>
                 <nav>
                   <UL>
                     <li>
-                      <NavLink activeClassName="active" to={`${match.path}/private/rofiq@gmail.com`}>
-                        Private Chat
+                      <NavLink activeClassName="active"
+                        to={{
+                          pathname: `${match.path}/private`,
+                          state: {
+                            data: result,
+                            index: index
+                          }
+                        }}
+                      >
+                        Result
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink activeClassName="active" to={`${match.path}/group/1`}>
-                        Group Chat
-                        <Badge className="badge-error" count={3} />
-                      </NavLink>
+                      <Link activeClassName="active"
+                        to={{
+                          pathname: `${match.path}/group`,
+                          state: {
+                            data: result,
+                            index: index
+                          }
+                        }}>
+                        Error
+                        <Badge className="badge-error" count={data.warning.length} />
+                      </Link>
                     </li>
                     <li>
-                      <NavLink activeClassName="active" to={`${match.path}/all/rofiq@gmail.com`}>
-                        All Contacts
-                      </NavLink>
+                      <Link activeClassName="active"
+                        to={{
+                          pathname: `${match.path}/all`,
+                          state: {
+                            data: result,
+                            index: index
+                          }
+                        }}>
+                        Json
+                      </Link>
                     </li>
                   </UL>
                 </nav>
@@ -150,7 +149,7 @@ const ChatApp = ({ match }) => {
                           </Cards>
                         }
                       >
-                        <Route path={`${match.path}/private`} component={PrivetChat} />
+                        <Route exact path={`${match.path}/private`} component={PrivetChat} />
                         <Route path={`${match.path}/group`} component={GroupChat} />
                         <Route path={`${match.path}/all`} component={AllContacts} />
                       </Suspense>
@@ -160,7 +159,7 @@ const ChatApp = ({ match }) => {
               </Cards>
             </ChatSidebar>
           </Col>
-          <Col xxl={17} lg={14} xs={24}>
+          <Col xxl={11} lg={12} xs={15}>
             <Switch>
               <Suspense
                 fallback={
@@ -170,9 +169,10 @@ const ChatApp = ({ match }) => {
                 }
               >
                 <Route exact path={match.path} component={SingleChat} />
-                <Route exact path={`${match.path}/private/:id`} component={SingleChat} />
-                <Route exact path={`${match.path}/all/:id`} component={SingleChat} />
-                <Route exact path={`${match.path}/group/:id`} component={SingleGroup} />
+                <Route exact path={`${match.path}/private`} component={SingleChat} />
+                <Route exact path={`${match.path}/private/:title`} component={SingleChat} />
+                <Route exact path={`${match.path}/group`} component={SingleChat} />
+                <Route exact path={`${match.path}/all`} component={SingleChat} />
               </Suspense>
             </Switch>
           </Col>
