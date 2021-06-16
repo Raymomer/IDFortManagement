@@ -1,12 +1,10 @@
-import React, { Suspense, useState, useLayoutEffect, useEffect, lazy } from 'react';
-import { Row, Col, Spin, Form, Table, Carousel, Skeleton, Collapse, Image, Tabs, Progress, Tooltip, Upload, Layout, Input, Select, message } from 'antd';
-import { InboxOutlined } from '@ant-design/icons';
+import React, { Suspense, useState, useLayoutEffect, useEffect } from 'react';
+import { Row, Col, Spin, Form, Table, Skeleton, Tabs, Input, Select, Pagination } from 'antd';
 import axios from 'axios'
-import { render } from '@testing-library/react';
+import Cookies from 'js-cookie';
 import { Link, NavLink, Route, useHistory } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
 import propTypes from 'prop-types';
-import { EmailWrapper } from './overview/style';
 import { BasicFormWrapper, Main } from '../styled';
 import { GalleryCard } from '../pages/style';
 
@@ -19,20 +17,18 @@ import { Modal } from '../../components/modals/antd-modals';
 import Heading from '../../components/heading/heading';
 
 
-const GalleryCards = lazy(() => import('../pages/overview/GalleryCard'));
-
 const { TabPane } = Tabs;
-const { Panel } = Collapse;
 const { Option, OptGroup } = Select;
-const { Dragger } = Upload;
 
 
 const Email = ({ match }) => {
-  console.log(match)
+
   const history = useHistory()
 
-  console.log(history)
-
+  // get token
+  const token = Cookies.get('4pToken');
+  // axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+  axios.defaults.headers.common.Authorization = `Bearer ighus53BtBbQHrlu50GWcJEZmxFqvUVPQZMQb19hvcA=`;
   const [isMailEditorOpen, setMailEditorStatus] = useState({
     editor: false,
     loading: false
@@ -40,6 +36,7 @@ const Email = ({ match }) => {
 
   const [scanSetting, setScanSetting] = useState({
     "profile": [],
+    "face": "",
     "verifyName": "",
     "verifyDob": "",
     "verifyAge": "",
@@ -59,7 +56,6 @@ const Email = ({ match }) => {
   });
 
 
-  const { responsive, collapsed } = state;
   const { path, params } = match;
 
   useLayoutEffect(() => {
@@ -73,13 +69,6 @@ const Email = ({ match }) => {
   }, []);
 
 
-  const toggleCollapsed = () => {
-    setState({
-      ...state,
-      collapsed: !collapsed,
-    });
-  };
-
   const toggleMailComposer = () => {
     setMailEditorStatus({ ...isMailEditorOpen, editor: !isMailEditorOpen['editor'] });
   };
@@ -88,95 +77,18 @@ const Email = ({ match }) => {
     setMailEditorStatus({ editor: false, loading: false });
   };
 
-
-
-
   const [tableInfo, setTable] = useState({
     response: []
   })
-  const [resultTable, setresultTable] = useState(``)
-  console.log(tableInfo)
 
+  const [pageinfo, setPage] = useState({
+    current: 1,
+    pageSize: 2
+  })
 
-
-  const supported_fields = ["documentNumber", "personalNumber", "firstName", "middleName", "lastName", "fullName", "firstNameLocal", "middleNameLocal", "lastNameLocal", "fullNameLocal", "dob", "expiry", "issued", "sex", "height", "weight", "address1", "address2", "postcode", "placeOfBirth", "documentType", "documentName", "vehicleClass", "restrictions", "issueAuthority", "stateFull", "stateShort", "countryIso2", "countryFull", "countryIso3", "nationalityIso2", "nationalityFull", "optionalData", "optionalData2", "customdata1", "customdata2", "customdata3", "customdata4", "customdata5", "trustlevel", "trustnote", "docupass_reference", "image", "imagehash"];
-
-
-
-
-
-  const docColumns = [
-    {
-      title: 'Parameters',
-      dataIndex: 'parameters',
-      key: 'parameters',
-      render: (ele) => {
-        return (
-          <div style={{ display: "-webkit-inline-box" }}>
-            <span style={{ fontWeight: 800 }}>{ele}</span>
-          </div>
-        )
-      }
-    },
-    {
-      title: 'Value',
-      dataIndex: 'value',
-      key: 'value',
-      render: ([value, confidence]) => {
-        return (
-          <div style={{ display: "-webkit-inline-box" }}>
-            <span>{value}</span><span style={{
-              "fontSize": "9px",
-              "color": "#AAA",
-              "marginLeft": "8px"
-            }}>{confidence}</span>
-          </div >
-        )
-      }
-    },
-  ]
-
-  const warnColumns = [
-    {
-      width: "30%",
-      title: 'Parameters',
-      dataIndex: 'parameters',
-      key: 'parameters',
-      render: ([ele, discript]) => {
-        return (
-          <Tooltip title={discript}>
-            <div style={{
-              display: "-webkit-inline-box",
-              overflowWrap: "anywhere"
-            }}>
-              <span style={{ fontWeight: 800 }}>{ele}</span>
-            </div>
-          </Tooltip>
-        )
-      }
-    },
-    {
-      title: 'Value',
-      dataIndex: 'value',
-      key: 'value',
-      render: (confidence) => {
-        let number = parseInt(confidence * 100)
-        return (
-          <Progress
-            percent={number}
-            style={{ marginBottom: '15px' }}
-            strokeColor={{
-              '0%': '#FF3030',
-              '100%': '#FF3030',
-            }}
-            status={number === 100 ? 'exception' : null
-            }
-          />
-        )
-      }
-    },
-  ]
-
+  const changePage = (current, pageSize) => {
+    setPage({ ...pageinfo, current: current })
+  }
 
   const toBase64 = file => new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -187,14 +99,13 @@ const Email = ({ match }) => {
 
 
   const scan = async (name) => {
-    console.log(scanDataSource)
+
     setMailEditorStatus({ ...isMailEditorOpen, loading: true })
     console.log("Start to Scan")
-
+    console.log(scanSetting);
     let r = {}
     let base64arr
     let frontImage = []
-    console.log(document.querySelector('#document').files)
     if (name == 'single') {
       if (document.querySelector('#document').files.length > 0) {
         let base64str = await toBase64(document.querySelector('#document').files[0])
@@ -223,27 +134,21 @@ const Email = ({ match }) => {
           console.log(base64str)
           base64str = base64str.split("base64,")
           frontImage.push({ fileName: document.querySelector('#documentMultiple').files[len].name, image: base64str[1] })
-
           len--
         }
       }
     }
 
-    // r["profile"] = '60c6b587450f25aa534c258a'
-
-    let url = "https://192.168.0.104/transaction"
+    let url = `${process.env.REACT_APP_API_ENDPOINT}/transaction`
     console.log(base64arr)
     while (frontImage.length) {
-      let name = frontImage[frontImage.length - 1].fileName
+      let name = frontImage[frontImage.length - 1].fileName;
       console.log(frontImage.length)
-      r['document'] = frontImage[frontImage.length - 1].image
+      r['document'] = frontImage[frontImage.length - 1].image;
       console.log(r)
       let postData = new Promise((resolve, reject) => {
-        axios.post(url, { ...r, ...scanDataSource }, {
-          headers: {
-            Authorization: "Bearer KTYUTnlX6pFB2tOHva7jhxbi4PvGAHLIx5Q0dGEalVE=",
-          }
-        }).then(function (res) {
+        axios.post(url, { ...r, ...scanDataSource }).then(function (res) {
+          console.log(res);
           let response = res.data
           let docImage = {}
           console.log(response['outputImage'])
@@ -256,7 +161,9 @@ const Email = ({ match }) => {
 
             }
             response['outputImage'] = docImage
+            response['outputImage_from'] = 'input'
           } else {
+            response['outputImage_from'] = 'output'
             Object.keys(response['outputImage']).map(ele => {
               let str = response['outputImage'][ele].slice(0, 15)
               if (!str.includes('http')) {
@@ -264,14 +171,13 @@ const Email = ({ match }) => {
               }
             })
           }
-
           response['scanTime'] = new Date().toLocaleDateString()
           response['name'] = name
 
-
-          tableInfo['response'].push(response)
+          tableInfo['response'].unshift(response)
           console.log(tableInfo['response'])
           resolve()
+
         }).catch(function (error) {
           console.log(error)
           resolve()
@@ -281,25 +187,22 @@ const Email = ({ match }) => {
       await postData.then(
         frontImage.pop()
       )
-
-
-
     }
     closeMailComposr()
   }
 
-
-  const pathName = path.split(':')[0];
+  const onChange = name => event => {
+    // console.log("start event...");
+    let upgrade = state;
+    upgrade[name] = event;
+    setScanSetting(upgrade)
+  };
 
   useEffect(() => {
 
 
-    let url = "https://192.168.0.104/profile"
-    axios.get(url, {
-      headers: {
-        Authorization: "Bearer KTYUTnlX6pFB2tOHva7jhxbi4PvGAHLIx5Q0dGEalVE=",
-      }
-    }).then(profileList => {
+    let url = `${process.env.REACT_APP_API_ENDPOINT}/profile`
+    axios.get(url).then(profileList => {
       let source = []
       let data = []
 
@@ -307,11 +210,39 @@ const Email = ({ match }) => {
         source.push(info.id)
       })
 
-      console.log(source)
+      console.log(scanSetting)
+      Object.keys(scanSetting).forEach(name => {
 
+        if (name == "profile") {
+          data.push({
+            "parameters": name,
+            "value": (
+              <Select
+                style={{ "width": "-webkit-fill-available" }}
+                defaultValue={source[0]}
+                onChange={onChange("profile")}
+              >
+                {source.map(ele => {
+                  return (
+                    <Option key={ele} value={ele}>{ele}</Option>
+                  )
+                })}
+              </Select>
+            )
+          })
+        } else {
+          data.push({
+            "parameters": name,
+            "value": (
+              <Input size="middle" placeholder={scanSetting[name]} />
+            )
+          })
+        }
+      })
       console.log(data)
       setScanSetting({ ...scanSetting, profile: source })
       setScanDataSource({ "profile": source[0] })
+
     }).catch(err => {
       console.log(err)
     })
@@ -319,6 +250,13 @@ const Email = ({ match }) => {
 
 
   }, [])
+
+
+  useEffect(() => {
+    if (history.location.state != null) {
+      setTable(history.location.state)
+    }
+  }, [history])
 
   const saveSetting = (e) => {
     console.log(e.target.id)
@@ -340,12 +278,12 @@ const Email = ({ match }) => {
 
             if (u == "profile") {
               console.log(scanSetting[u])
-
+              let str = u.replace(/^./, u[0].toUpperCase())
               return (
 
                 <Form.Item
                   key={u}
-                  label={u}
+                  label={str}
                   name={u}>
                   <Select
                     id={u}
@@ -357,7 +295,7 @@ const Email = ({ match }) => {
                   >
                     {scanSetting[u].map(num => {
                       return (
-                        <Option value={num}>{num}</Option>
+                        <Option key={num} value={num}>{num}</Option>
                       )
                     })}
 
@@ -367,11 +305,13 @@ const Email = ({ match }) => {
             }
 
             else {
+              let str = u.replace(/^./, u[0].toUpperCase())
+
               return (
 
                 <Form.Item
                   key={u}
-                  label={u + ": "}
+                  label={str + ": "}
                   name={u}>
                   <Input
                     id={u}
@@ -387,15 +327,6 @@ const Email = ({ match }) => {
       </>)
   }
 
-
-  useEffect(() => {
-    if (history.location.state != null) {
-      setTable(history.location.state)
-    }
-  }, [history])
-
-  console.log(scanSetting)
-  console.log(resultTable)
   return (
 
     <>
@@ -525,8 +456,7 @@ const Email = ({ match }) => {
                 </Button>
               </div>
             </TabPane>
-            <TabPane tab="Setting" key="3" >
-
+            <TabPane tab="Setting" key="3">
               <Form name="info" layout="vertical" >
                 <SettingList />
               </Form>
@@ -538,7 +468,6 @@ const Email = ({ match }) => {
       <Main>
         <Button
           style={{
-            marginLeft: "5px",
             marginBottom: "15px",
             width: "auto"
           }}
@@ -550,16 +479,15 @@ const Email = ({ match }) => {
           <FeatherIcon icon="plus" size={18} />Upload
         </Button>
 
-
-
-
         {tableInfo == '' ?
           <></> :
-          <Main>
-            <Row gutter={25}>
-              {
-                tableInfo.response.map((res, id) => {
-                  console.log(res)
+          <Row gutter={25}>
+            {
+              tableInfo.response.map((res, id) => {
+                console.log(pageinfo)
+                let startIdx = (pageinfo.current - 1) * pageinfo.pageSize
+                let endIdx = startIdx + pageinfo.pageSize
+                if (id >= startIdx && id < endIdx)
                   return (
                     <Col key={id} xxl={6} lg={8} sm={12} xs={24} >
                       <Suspense
@@ -569,35 +497,39 @@ const Email = ({ match }) => {
                           </Cards>
                         }
                       >
-                        <GalleryCard style={{ marginBottom: '25px' }}>
+                        <GalleryCard style={{ marginBottom: '25px'}}>
                           <NavLink to={{ pathname: "/admin/main/chat/private", state: { data: tableInfo.response, index: id } }} >
                             <figure>
-
-
                               <div style={{
                                 height: "250px",
                                 margin: "auto",
+                                borderRadius: "5px",
                                 backgroundImage: `url(${res.outputImage['front']})`,
                                 backgroundPosition: "center",
                                 backgroundSize: "cover",
                                 backgroundAttachment: "local",
-                                backgroundRepeat: "no-repeat",
-                                borderRadius: "5px"
-
+                                backgroundRepeat: "no-repeat"
                               }}>
                               </div>
-                              {/* <img style={{ width: '50%' }} src={res.outputImage['front']} alt="" /> */}
                               <figcaption>
                                 <div className="gallery-single-content">
                                   <Heading className="gallery-single-title" as="h4">
                                     {res.name}
                                   </Heading>
-                                  {/* <span>{res.scanTime}</span></p> */}
                                   <div>
-                                    <p>Decision : <span style={{ color: '#000' }}>{res.decision}</span>&emsp;
-                                      Statue : <span style={{ color: '#000' }}>{res.data.countryFull[0].value}</span>&emsp;
+                                    <p>
+                                      Decision:
+                                      <span style={{ color: '#000' }}>{res.decision}</span>
+                                      &emsp;
+                                      Status:
+                                      <span style={{ color: '#000' }}>{res.data.countryFull[0].value}</span>
+                                      &emsp;
                                     </p>
-                                    <p>TranscationID : </p>{res.transactionId}<p style={{ textAlign: "right" }}>{res.scanTime}</p>
+                                    <p>Transaction ID: </p>
+                                    <span>
+                                      {res.transactionId}
+                                      <p style={{ textAlign: "right" }}>{res.scanTime}</p>
+                                    </span>
                                   </div>
                                 </div>
                               </figcaption>
@@ -607,12 +539,24 @@ const Email = ({ match }) => {
                       </Suspense>
                     </Col>
                   )
-                })
-              }
+              })
+            }
+            {tableInfo.response.length > 2 ?
+              <Col className="pb-30" >
+                <Pagination
+                  onChange={changePage}
+                  pageSize={pageinfo.pageSize}
+                  total={tableInfo.response.length}
+                >
 
+                </Pagination>
+              </Col>
+              :
+              <></>
 
-            </Row>
-          </Main>
+            }
+
+          </Row>
 
         }
 
