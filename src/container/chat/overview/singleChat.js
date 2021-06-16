@@ -1,23 +1,13 @@
-/* eslint-disable jsx-a11y/accessible-emoji */
 import React, { useState, useEffect, Fragment } from 'react';
-import { Row, Upload, message, Tooltip } from 'antd';
-import { useSelector, useDispatch } from 'react-redux';
 import { NavLink, Link, useHistory } from 'react-router-dom';
-import FeatherIcon from 'feather-icons-react';
-import moment from 'moment';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { SmileOutlined, MoreOutlined } from '@ant-design/icons';
 import PropTypes from 'prop-types';
+import { Row, Upload, message, Tooltip } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars';
-import Picker from 'emoji-picker-react';
-import { SingleChatWrapper, MessageList, Footer, BackShadowEmoji } from '../style';
+import { SingleChatWrapper } from '../style';
 import Heading from '../../../components/heading/heading';
-import { Button } from '../../../components/buttons/buttons';
-import { updatePrivetChat } from '../../../redux/chat/actionCreator';
 import { Cards } from '../../../components/cards/frame/cards-frame';
-import { Dropdown } from '../../../components/dropdown/dropdown';
 
-const SingleChat = ({ match }) => {
+const SingleChat = () => {
   const history = useHistory();
   const result = history.location.state.data;
   const index = history.location.state.index;
@@ -29,13 +19,10 @@ const SingleChat = ({ match }) => {
   // get field info
   const info = history.location.pathname.split("/")[5];
   if (info !== undefined) {
-    console.log(info + '_0')
-    console.log(document.getElementById(info + '_0'))
     const title = info.replace(/^./, info[0].toUpperCase())
     const value = data.data[info][0].value;
 
     useEffect(() => {
-
       setState({
         ...state,
         title: title,
@@ -44,27 +31,138 @@ const SingleChat = ({ match }) => {
     }, [info])
   }
 
-
-
   let ImageSource = [];
   const ImageList = () => {
-    console.log(data)
-    Object.keys(data.outputImage).map((parameters, idx) => {
-      console.log(idx)
-
-
-
-
+    Object.keys(data.outputImage).map(parameters => {
       if (ImageSource[parameters] === undefined) {
         ImageSource.push({
           "side": parameters,
           "value": data.outputImage[parameters]
-
+          // data bounding box
         })
       }
     })
   }
   ImageList();
+
+
+
+  const ImageLoad = ({ info }) => {
+    const [sourceLoaded, setSourceLoaded] = useState(null)
+    console.log(info)
+
+
+    // console.log(img.width, img.height)
+
+    useEffect(() => {
+      const img = new Image()
+      img.src = info.src
+      img.onload = () => {
+        let ratio = parseFloat((img.height / 300).toFixed(2))
+        let divHeight = parseFloat((img.height / ratio).toFixed(2))
+        let divWidth = parseFloat((img.width / ratio).toFixed(2))
+        let insert = []
+
+        Object.keys(data.data).map(ele => {
+
+          //outputBox inputBox
+
+          let selectBox = 'outputBox'
+          if (data.outputImage_from == 'input') {
+            selectBox = 'inputBox'
+          }
+
+          data.data[ele].map((res, i) => {
+            if (res.index == info.index && res[selectBox] != null) {
+              let draw = res[selectBox]
+              let x, y, w, h
+
+
+
+              if (divHeight > divWidth) {
+                x = draw[3][0] / ratio
+                y = draw[3][1] / ratio
+                w = (draw[0][0] - draw[3][0]) / ratio
+                h = (draw[1][1] - draw[0][1]) / ratio
+              } else {
+                x = draw[0][0] / ratio
+                y = draw[0][1] / ratio
+                w = (draw[1][0] - draw[0][0]) / ratio
+                h = (draw[3][1] - draw[0][1]) / ratio
+              }
+              x = parseFloat(x.toFixed(2))
+              y = parseFloat(y.toFixed(2))
+              w = parseFloat(w.toFixed(2))
+              h = parseFloat(h.toFixed(2))
+
+
+              console.log(ratio)
+              console.log(ele, " : ", res.value)
+              console.log(draw)
+              console.log(x, y, w, h)
+              let title = ele.replace(/^./, ele[0].toUpperCase())
+              insert.push(
+                <Tooltip title={title + ": " + res.value} id={ele + '_' + info.index} >
+                  <label style={{
+                    position: "absolute",
+                    left: x,
+                    top: y,
+                    width: w,
+                    height: h,
+                    border: `1px #ABFFFF solid`
+                  }}
+                    key={i}
+                  >
+                  </label>
+                </Tooltip>)
+            }
+          })
+        })
+
+        setSourceLoaded({
+          src: info.src,
+          divHeight: divHeight,
+          divWidth: divWidth,
+          data: insert,
+        })
+      }
+    }, [info])
+
+
+    // console.log(img.src)
+
+    if (sourceLoaded !== null)
+      return (
+        <div style={{ height: sourceLoaded.divHeight + "px", width: sourceLoaded.divWidth + "px", margin: "auto", position: "relative" }}>
+          <div style={{
+            height: "300px",
+            width: "100%",
+            borderRadius: "20px",
+            backgroundImage: `url(${sourceLoaded.src})`,
+            backgroundPosition: "center",
+            backgroundSize: "contain",
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: "local",
+            minHeight: sourceLoaded.divHeight,
+            minWidth: sourceLoaded.divWidth,
+
+          }}>
+            {sourceLoaded.data.map(i => {
+              return i
+            })}
+          </div>
+        </div >
+      )
+
+    else {
+      return (
+        <></>
+      )
+    }
+  }
+
+
+
 
   const renderView = ({ style, ...props }) => {
     const customStyle = {
@@ -107,85 +205,6 @@ const SingleChat = ({ match }) => {
   };
 
 
-
-  const ImageLoad = ({ info }) => {
-
-    console.log(info)
-    let insert = []
-
-    const img = new Image()
-    img.src = info.src
-    console.log(img.width, img.height)
-    let ratio = img.height / 300
-    let divHeight = img.height / ratio
-    let divWidth = img.width / ratio
-
-    Object.keys(data.data).map(ele => {
-      data.data[ele].map((res, i) => {
-        if (res.index == info.index && res.inputBox != null) {
-          let draw = res.inputBox
-          let x, y, w, h
-
-          if (divHeight > divWidth) {
-            x = draw[3][0] / ratio
-            y = draw[3][1] / ratio
-            w = (draw[0][0] - draw[3][0]) / ratio
-            h = (draw[1][1] - draw[0][1]) / ratio
-          } else {
-            x = draw[0][0] / ratio
-            y = draw[0][1] / ratio
-            w = (draw[1][0] - draw[0][0]) / ratio
-            h = (draw[3][1] - draw[0][1]) / ratio
-          }
-
-          console.log(ratio)
-          console.log(ele, " : ", res.value)
-          console.log(draw)
-          console.log(x, y, w, h)
-          let title = ele.replace(/^./, ele[0].toUpperCase())
-          insert.push(
-            <Tooltip title={title + ": " + res.value} id={ele + '_' + info.index} >
-              <label style={{
-                position: "absolute",
-                left: x,
-                top: y,
-                width: w,
-                height: h,
-                border: `1px #ABFFFF solid`
-              }}
-                key={i}
-              >
-
-              </label>
-            </Tooltip>)
-        }
-
-      })
-
-    })
-
-
-    return (
-      <div style={{ height: divHeight + "px", width: divWidth + "px", margin: "auto", position: "relative" }}>
-        <div style={{
-          height: "300px",
-          width: "100%",
-          borderRadius: "20px",
-          backgroundImage: `url(${info.src})`,
-          backgroundPosition: "center",
-          backgroundSize: "contain",
-          backgroundRepeat: "no-repeat",
-          backgroundAttachment: "local"
-        }}>
-
-
-          {insert.map(i => {
-            return i
-          })}
-        </div>
-
-      </div>)
-  }
   return (
     <SingleChatWrapper>
       <Cards
@@ -210,6 +229,7 @@ const SingleChat = ({ match }) => {
             {ImageSource.length ?
               (
                 ImageSource.map((img, index) => {
+                  console.log(ImageSource)
                   return (
                     <Fragment key={index}>
                       <li className="atbd-chatbox__single" key={index} style={{ overflow: 'hidden' }}>
@@ -218,9 +238,7 @@ const SingleChat = ({ match }) => {
                             {img.side.toUpperCase()}
                           </h3>
                           <div className="atbd-chatbox__contentInner d-flex">
-                            <ImageLoad info={{ src: img.value, index: index }} />
-                            {/* <Image src={img.value} style={{ width: '450px' }} alt={img.side} /> */}
-                          </div>
+                            <ImageLoad info={{ src: img.value, index: index }} />                          </div>
                         </div>
                       </li>
                     </Fragment>
