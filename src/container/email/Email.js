@@ -1,7 +1,8 @@
 import React, { Suspense, useState, useLayoutEffect, useEffect } from 'react';
-import { Row, Col, Spin, Form, Table, Skeleton, Tabs, Input, Select, Pagination } from 'antd';
+import { Row, Col, Spin, Form, Table, Skeleton, Tabs, Input, Select, message, Pagination } from 'antd';
 import axios from 'axios'
 import Cookies from 'js-cookie';
+import { useDispatch } from 'react-redux'
 import { Link, NavLink, Route, useHistory } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
 import propTypes from 'prop-types';
@@ -15,20 +16,24 @@ import { Cards } from '../../components/cards/frame/cards-frame';
 import { Button } from '../../components/buttons/buttons';
 import { Modal } from '../../components/modals/antd-modals';
 import Heading from '../../components/heading/heading';
-
+import ERR from '../../demoData/errInfo.json'
 
 const { TabPane } = Tabs;
 const { Option, OptGroup } = Select;
 
-
+console.log(ERR)
 const Email = ({ match }) => {
-
+  const dispath = useDispatch()
   const history = useHistory()
 
   // get token
   const token = Cookies.get('4pToken');
   // axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-  axios.defaults.headers.common.Authorization = `Bearer ighus53BtBbQHrlu50GWcJEZmxFqvUVPQZMQb19hvcA=`;
+  axios.defaults.headers.common.Authorization = `Bearer h7SA39De/6hwvL87c86M7hun7PvcSSZQSPRWnBBLYFI=`;
+
+
+  // dispath(message)
+
   const [isMailEditorOpen, setMailEditorStatus] = useState({
     editor: false,
     loading: false
@@ -171,22 +176,29 @@ const Email = ({ match }) => {
               }
             })
           }
-          response['scanTime'] = new Date().toLocaleDateString()
+          let date = new Date()
+          response['scanTime'] = date.toLocaleDateString() + " " + date.toLocaleTimeString()
           response['name'] = name
 
           tableInfo['response'].unshift(response)
           console.log(tableInfo['response'])
           resolve()
 
-        }).catch(function (error) {
-          console.log(error)
-          resolve()
+        }).catch(function (err) {
+          try {
+            reject(err.response.status)
+          } catch {
+            resolve()
+          }
+
         });
       })
 
       await postData.then(
         frontImage.pop()
-      )
+      ).catch(err => {
+        sendMessage(err)
+      })
     }
     closeMailComposr()
   }
@@ -244,7 +256,8 @@ const Email = ({ match }) => {
       setScanDataSource({ "profile": source[0] })
 
     }).catch(err => {
-      console.log(err)
+      console.log(err.response.status)
+      sendMessage(err.response.status)
     })
 
 
@@ -269,6 +282,11 @@ const Email = ({ match }) => {
   }
 
   const SettingList = () => {
+    let profileId = scanSetting[`profile`][0]
+    if (scanDataSource.profile != null) {
+      profileId = scanDataSource.profile
+    }
+
     return (
       <>
 
@@ -287,10 +305,11 @@ const Email = ({ match }) => {
                   name={u}>
                   <Select
                     id={u}
-                    placeholder={scanSetting[u][0]}
-                    defaultValue={scanSetting[u][0]}
+                    placeholder={profileId}
+                    defaultValue={profileId}
                     onChange={(value) => {
                       console.log(u, value)
+                      setScanDataSource({ ...scanDataSource, profile: value })
                     }}
                   >
                     {scanSetting[u].map(num => {
@@ -326,6 +345,18 @@ const Email = ({ match }) => {
         }
       </>)
   }
+
+  const sendMessage = (code) => {
+
+    ERR.map(id => {
+      if (id.code == code && id == 401) {
+        message.warning(id.response);
+        // history.replace('http://localhost:3000/admin')
+      }
+    })
+
+  }
+
 
   return (
 
@@ -481,83 +512,86 @@ const Email = ({ match }) => {
 
         {tableInfo == '' ?
           <></> :
-          <Row gutter={25}>
-            {
-              tableInfo.response.map((res, id) => {
-                console.log(pageinfo)
-                let startIdx = (pageinfo.current - 1) * pageinfo.pageSize
-                let endIdx = startIdx + pageinfo.pageSize
-                if (id >= startIdx && id < endIdx)
-                  return (
-                    <Col key={id} xxl={6} lg={8} sm={12} xs={24} >
-                      <Suspense
-                        fallback={
-                          <Cards headless>
-                            <Skeleton active />
-                          </Cards>
-                        }
-                      >
-                        <GalleryCard style={{ marginBottom: '25px'}}>
-                          <NavLink to={{ pathname: "/admin/main/chat/private", state: { data: tableInfo.response, index: id } }} >
-                            <figure>
-                              <div style={{
-                                height: "250px",
-                                margin: "auto",
-                                borderRadius: "5px",
-                                backgroundImage: `url(${res.outputImage['front']})`,
-                                backgroundPosition: "center",
-                                backgroundSize: "cover",
-                                backgroundAttachment: "local",
-                                backgroundRepeat: "no-repeat"
-                              }}>
-                              </div>
-                              <figcaption>
-                                <div className="gallery-single-content">
-                                  <Heading className="gallery-single-title" as="h4">
-                                    {res.name}
-                                  </Heading>
-                                  <div>
-                                    <p>
-                                      Decision:
-                                      <span style={{ color: '#000' }}>{res.decision}</span>
-                                      &emsp;
-                                      Status:
-                                      <span style={{ color: '#000' }}>{res.data.countryFull[0].value}</span>
-                                      &emsp;
-                                    </p>
-                                    <p>Transaction ID: </p>
-                                    <span>
-                                      {res.transactionId}
-                                      <p style={{ textAlign: "right" }}>{res.scanTime}</p>
-                                    </span>
-                                  </div>
+          <>
+            <Row gutter={25}>
+              {
+                tableInfo.response.map((res, id) => {
+                  console.log(pageinfo)
+                  let startIdx = (pageinfo.current - 1) * pageinfo.pageSize
+                  let endIdx = startIdx + pageinfo.pageSize
+                  if (id >= startIdx && id < endIdx)
+                    return (
+                      <Col key={id} xxl={6} lg={8} sm={12} xs={24} >
+                        <Suspense
+                          fallback={
+                            <Cards headless>
+                              <Skeleton active />
+                            </Cards>
+                          }
+                        >
+                          <GalleryCard style={{ marginBottom: '25px' }}>
+                            <NavLink to={{ pathname: "/admin/main/chat/private", state: { data: tableInfo.response, index: id } }} >
+                              <figure>
+                                <div style={{
+                                  height: "250px",
+                                  margin: "auto",
+                                  borderRadius: "5px",
+                                  backgroundImage: `url(${res.outputImage['front']})`,
+                                  backgroundPosition: "center",
+                                  backgroundSize: "cover",
+                                  backgroundAttachment: "local",
+                                  backgroundRepeat: "no-repeat"
+                                }}>
                                 </div>
-                              </figcaption>
-                            </figure>
-                          </NavLink>
-                        </GalleryCard>
-                      </Suspense>
-                    </Col>
-                  )
-              })
-            }
-            {tableInfo.response.length > 2 ?
-              <Col className="pb-30" >
-                <Pagination
-                  onChange={changePage}
-                  pageSize={pageinfo.pageSize}
-                  total={tableInfo.response.length}
-                >
+                                <figcaption>
+                                  <div className="gallery-single-content">
+                                    <Heading className="gallery-single-title" as="h4">
+                                      {res.name}
+                                    </Heading>
+                                    <div>
+                                      <p>
+                                        Decision:
+                                        <span style={{ color: '#000' }}>{res.decision}</span>
+                                        &emsp;
+                                        Status:
+                                        <span style={{ color: '#000' }}>{res.data.countryFull[0].value}</span>
+                                        &emsp;
+                                      </p>
+                                      <p>Transaction ID: </p>
+                                      <span>
+                                        {res.transactionId}
+                                        <p style={{ textAlign: "right" }}>{res.scanTime}</p>
+                                      </span>
+                                    </div>
+                                  </div>
+                                </figcaption>
+                              </figure>
+                            </NavLink>
+                          </GalleryCard>
+                        </Suspense>
+                      </Col>
+                    )
+                })
+              }
+            </Row>
+            <Row>
+              {tableInfo.response.length > 2 ?
+                <Col  >
+                  <Pagination
+                    onChange={changePage}
+                    pageSize={pageinfo.pageSize}
+                    total={tableInfo.response.length}
+                  >
 
-                </Pagination>
-              </Col>
-              :
-              <></>
+                  </Pagination>
+                </Col>
+                :
+                <></>
 
-            }
+              }
 
-          </Row>
-
+            </Row>
+          </>
         }
 
       </Main>
