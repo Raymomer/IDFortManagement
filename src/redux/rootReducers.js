@@ -25,6 +25,7 @@ import Profile from './profile/reducers';
 import Calender from './calendar/reducers';
 import FileManager from './fileManager/reducers';
 import { axiosCrudReducer, axiosSingleCrudReducer } from './crud/axios/reducers';
+import { scanSetting, setSaving, responseSaving } from './scan/reducers'
 
 const rootReducers = combineReducers({
   themeUsers: themeUsersReducer,
@@ -61,6 +62,9 @@ const rootReducers = combineReducers({
   FileManager,
   AxiosCrud: axiosCrudReducer,
   SingleAxiosCrud: axiosSingleCrudReducer,
+  scanSet: scanSetting,
+  scanSetSaving: setSaving,
+  scanResponse: responseSaving,
 });
 
 export default rootReducers;
