@@ -1,20 +1,15 @@
 import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { NavLink, useHistory } from 'react-router-dom';
-import moment from 'moment';
-import FeatherIcon from 'feather-icons-react';
 import PropTypes from 'prop-types';
 import { Badge } from 'antd';
 import { BlockSpan, ChatWrapper } from '../style';
-import { textRefactor } from '../../../components/utilities/utilities';
-import { filterSinglepageGroup } from '../../../redux/chat/actionCreator';
-import { Button } from '../../../components/buttons/buttons';
 
 const GroupChat = ({ match }) => {
   const history = useHistory();
+  const from = history.location.state.from;
   const result = history.location.state.data;
   const index = history.location.state.index;
-  const data = result[index];
+  const data = result[index].result;
 
   let errorSource = []
 
@@ -57,8 +52,8 @@ const GroupChat = ({ match }) => {
                     </div>
                     <div className="author-chatMeta">
                       {value >= 0.8 ?
-                        <Badge count={value == 1? value: value.toFixed(3)} />:
-                        <Badge className="badge-success" count={value.toFixed(3)} /> }
+                        <Badge count={value == 1 ? value : value.toFixed(3)} /> :
+                        <Badge className="badge-success" count={value.toFixed(3)} />}
                     </div>
                   </a>
                 </li>
