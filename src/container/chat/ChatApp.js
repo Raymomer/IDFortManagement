@@ -1,15 +1,16 @@
-import React, { useState, lazy, Suspense } from 'react';
-import { Row, Col, Badge, Skeleton } from 'antd';
-import { useSelector } from 'react-redux';
-import { Switch, Route, NavLink, useHistory, Link } from 'react-router-dom';
-import FeatherIcon from 'feather-icons-react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
+import { Row, Col, Badge, Form, Skeleton, Modal, Select, message } from 'antd';
+import { Switch, Route, NavLink, useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+import { useDispatch } from 'react-redux';
+import { logOut } from '../../redux/authentication/actionCreator';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { UL, Content, ChatSidebar } from './style';
 import PrivetChat from './overview/PrivetChat';
 import GroupChat from './overview/GroupChat';
 import AllContacts from './overview/AllContacts';
-import { AutoComplete } from '../../components/autoComplete/autoComplete';
 import { Main } from '../styled';
 import { Button } from '../../components/buttons/buttons';
 import { Cards } from '../../components/cards/frame/cards-frame';
@@ -17,13 +18,24 @@ import { PageHeader } from '../../components/page-headers/page-headers';
 
 
 const SingleChat = lazy(() => import('./overview/singleChat'));
-const SingleGroup = lazy(() => import('./overview/SingleGroupChat'));
 
 const ChatApp = ({ match }) => {
+
   const history = useHistory();
+  const dispatch = useDispatch();
+  // get token
+  const token = Cookies.get('4pToken');
+  const apiPath = Cookies.get('ApiEnd');
+  axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+  const from = history.location.state.from;
   const result = history.location.state.data;
   const index = history.location.state.index;
   const data = result[index];
+  const [state, setState] = useState(data.decision);
+  const [open, setOpen] = useState(false);
+
+
+  console.log(data)
 
   const renderView = ({ style, ...props }) => {
     const customStyle = {
@@ -66,8 +78,58 @@ const ChatApp = ({ match }) => {
   };
 
   const goBack = () => {
-    history.replace('/admin/email/inbox', { "response": result });
+    if (from == "scan") {
+      history.replace('/admin/scan', { "response": result });
+    } else if (from == "transaction") {
+      history.replace('/admin/transaction');
+    }
   }
+
+  const onChange = e => {
+    let value = state;
+    value = e
+    setState(value)
+  };
+
+  useEffect(() => {
+    console.log(state);
+  }, [state])
+
+  useEffect(() => {
+
+
+
+    console.log(result[index]);
+
+  }, [result])
+
+  const updateDecision = () => {
+    setOpen(false)
+    axios.patch(`${apiPath}/transaction/${data.id || data.transitionId}`,
+      { "decision": state })
+      .then(res => {
+        console.log(res);
+        if (res.data.success) {
+          console.log(res.data);
+          result[index].decision = state;
+          message.success("Success", 3);
+        } else {
+          message.error(res.data.message);
+        }
+      })
+      .catch(err => {
+        if (err.response.status === 401) {
+          message.error("Login timeout expired", 3)
+          setTimeout(() => {
+            dispatch(logOut());
+          }, 3000)
+        } else {
+          console.log(err);
+          message.error("Error", 3)
+        }
+      })
+  }
+
 
   return (
     <>
@@ -76,14 +138,35 @@ const ChatApp = ({ match }) => {
         title="Result"
         buttons={[
           <div key="1" className="page-header-actions">
+            <Button size="small" onClick={() => { setOpen(true) }}>
+              Update Decision
+            </Button>
             <Button size="small" type="primary" onClick={goBack}>
               Back
             </Button>
           </div>,
         ]}
       />
-
       <Main>
+        <Modal
+          title="Do you want to change decision?"
+          centerd
+          visible={open}
+          onOk={updateDecision}
+          onCancel={() => { setOpen(false) }}
+          width={400}
+        >
+          <Form.Item>
+            <Select
+              defaultValue={state}
+              onChange={onChange}
+            >
+              <Select.Option key={"accept"} value={"accept"}>Accept</Select.Option>
+              <Select.Option key={"review"} value={"review"}>Review</Select.Option>
+              <Select.Option key={"reject"} value={"reject"}>Reject</Select.Option>
+            </Select>
+          </Form.Item>
+        </Modal>
         <Row gutter={30}>
           <Col xxl={13} lg={12} xs={9}>
             <ChatSidebar>
@@ -93,8 +176,9 @@ const ChatApp = ({ match }) => {
                     <li>
                       <NavLink activeClassName="active"
                         to={{
-                          pathname: `${match.path}/private`,
+                          pathname: `${match.path}/result`,
                           state: {
+                            from: from,
                             data: result,
                             index: index
                           }
@@ -104,29 +188,31 @@ const ChatApp = ({ match }) => {
                       </NavLink>
                     </li>
                     <li>
-                      <Link activeClassName="active"
+                      <NavLink activeClassName="active"
                         to={{
-                          pathname: `${match.path}/group`,
+                          pathname: `${match.path}/error`,
                           state: {
+                            from: from,
                             data: result,
                             index: index
                           }
                         }}>
                         Error
-                        <Badge className="badge-error" count={data.warning.length} />
-                      </Link>
+                        <Badge className="badge-error" count={data.warning !== undefined ? data.warning.length : 0} />
+                      </NavLink>
                     </li>
                     <li>
-                      <Link activeClassName="active"
+                      <NavLink activeClassName="active"
                         to={{
-                          pathname: `${match.path}/all`,
+                          pathname: `${match.path}/json`,
                           state: {
+                            from: from,
                             data: result,
                             index: index
                           }
                         }}>
                         Json
-                      </Link>
+                      </NavLink>
                     </li>
                   </UL>
                 </nav>
@@ -149,9 +235,9 @@ const ChatApp = ({ match }) => {
                           </Cards>
                         }
                       >
-                        <Route exact path={`${match.path}/private`} component={PrivetChat} />
-                        <Route path={`${match.path}/group`} component={GroupChat} />
-                        <Route path={`${match.path}/all`} component={AllContacts} />
+                        <Route path={`${match.path}/result`} component={PrivetChat} />
+                        <Route path={`${match.path}/error`} component={GroupChat} />
+                        <Route path={`${match.path}/json`} component={AllContacts} />
                       </Suspense>
                     </Switch>
                   </Scrollbars>
@@ -169,10 +255,10 @@ const ChatApp = ({ match }) => {
                 }
               >
                 <Route exact path={match.path} component={SingleChat} />
-                <Route exact path={`${match.path}/private`} component={SingleChat} />
-                <Route exact path={`${match.path}/private/:title`} component={SingleChat} />
-                <Route exact path={`${match.path}/group`} component={SingleChat} />
-                <Route exact path={`${match.path}/all`} component={SingleChat} />
+                <Route exact path={`${match.path}/result`} component={SingleChat} />
+                <Route exact path={`${match.path}/result/:title`} component={SingleChat} />
+                <Route exact path={`${match.path}/error`} component={SingleChat} />
+                <Route exact path={`${match.path}/json`} component={SingleChat} />
               </Suspense>
             </Switch>
           </Col>
