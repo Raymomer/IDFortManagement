@@ -2,13 +2,14 @@ import React, { Suspense, useState, useLayoutEffect, useEffect } from 'react';
 import { Row, Col, Spin, Form, Table, Skeleton, Tabs, Input, Select, message, Pagination } from 'antd';
 import axios from 'axios'
 import Cookies from 'js-cookie';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux';
+import { logOut } from '../../redux/authentication/actionCreator';
+import { profileUpdate, scanSetSaving, scanResponseSaving } from '../../redux/scan/actionCreator';
 import { Link, NavLink, Route, useHistory } from 'react-router-dom';
 import FeatherIcon from 'feather-icons-react';
 import propTypes from 'prop-types';
 import { BasicFormWrapper, Main } from '../styled';
 import { GalleryCard } from '../pages/style';
-
 import { CardStyleWrapper } from '../ui-elements/ui-elements-styled';
 
 import { PageHeader } from '../../components/page-headers/page-headers';
@@ -16,44 +17,37 @@ import { Cards } from '../../components/cards/frame/cards-frame';
 import { Button } from '../../components/buttons/buttons';
 import { Modal } from '../../components/modals/antd-modals';
 import Heading from '../../components/heading/heading';
-import ERR from '../../demoData/errInfo.json'
+
+
 
 const { TabPane } = Tabs;
 const { Option, OptGroup } = Select;
 
-console.log(ERR)
-const Email = ({ match }) => {
-  const dispath = useDispatch()
-  const history = useHistory()
 
+const Email = ({ match }) => {
+
+  const history = useHistory()
+  const dispatch = useDispatch();
   // get token
   const token = Cookies.get('4pToken');
+  const apiPath = Cookies.get('ApiEnd');
   // axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-  axios.defaults.headers.common.Authorization = `Bearer h7SA39De/6hwvL87c86M7hun7PvcSSZQSPRWnBBLYFI=`;
-
-
-  // dispath(message)
+  axios.defaults.headers.common.Authorization = `Bearer 0iu3kPIsLXDta/GRJ1LfDuDNPZYVDcOz8WOMMJ74PPY=`
 
   const [isMailEditorOpen, setMailEditorStatus] = useState({
     editor: false,
     loading: false
   });
+  const { scanSetting, scanDataSource, tableInfo } = useSelector(state => {
+    console.log(state)
+    return {
+      scanSetting: state.scanSet.data,
+      scanDataSource: state.scanSetSaving.data,
+      tableInfo: { response: state.scanResponse.data }
+    };
+  });
 
-  const [scanSetting, setScanSetting] = useState({
-    "profile": [],
-    "face": "",
-    "verifyName": "",
-    "verifyDob": "",
-    "verifyAge": "",
-    "verifyAddress": "",
-    "verifyPostcode": "",
-    "verifyDocumentNumber": "",
-    "verifyName": "",
-    "ip": "",
-    "customData": ""
-  })
-
-  const [scanDataSource, setScanDataSource] = useState(null)
+  console.log(scanDataSource)
 
   const [state, setState] = useState({
     responsive: 0,
@@ -82,13 +76,12 @@ const Email = ({ match }) => {
     setMailEditorStatus({ editor: false, loading: false });
   };
 
-  const [tableInfo, setTable] = useState({
-    response: []
-  })
+
+
 
   const [pageinfo, setPage] = useState({
     current: 1,
-    pageSize: 2
+    pageSize: 8
   })
 
   const changePage = (current, pageSize) => {
@@ -144,7 +137,7 @@ const Email = ({ match }) => {
       }
     }
 
-    let url = `${process.env.REACT_APP_API_ENDPOINT}/transaction`
+    let url = `${apiPath}/transaction`
     console.log(base64arr)
     while (frontImage.length) {
       let name = frontImage[frontImage.length - 1].fileName;
@@ -154,7 +147,10 @@ const Email = ({ match }) => {
       let postData = new Promise((resolve, reject) => {
         axios.post(url, { ...r, ...scanDataSource }).then(function (res) {
           console.log(res);
-          let response = res.data
+          let response = {}
+
+
+          response['result'] = res.data
           let docImage = {}
           console.log(response['outputImage'])
           if (response['outputImage'] == undefined) {
@@ -179,26 +175,28 @@ const Email = ({ match }) => {
           let date = new Date()
           response['scanTime'] = date.toLocaleDateString() + " " + date.toLocaleTimeString()
           response['name'] = name
-
-          tableInfo['response'].unshift(response)
-          console.log(tableInfo['response'])
+          console.log(response)
+          dispatch(scanResponseSaving(response))
+          // tableInfo['response'].unshift(response)
+          // console.log(tableInfo['response'])
           resolve()
 
-        }).catch(function (err) {
-          try {
-            reject(err.response.status)
-          } catch {
-            resolve()
+        }).catch(function (error) {
+          if (err.response.status === 401) {
+            message.error("Login timeout expired", 3)
+            setTimeout(() => {
+              dispatch(logOut());
+            }, 3000)
+          } else {
+            console.log(err);
+            message.error("Error", 3)
           }
-
         });
       })
 
       await postData.then(
         frontImage.pop()
-      ).catch(err => {
-        sendMessage(err)
-      })
+      )
     }
     closeMailComposr()
   }
@@ -213,7 +211,8 @@ const Email = ({ match }) => {
   useEffect(() => {
 
 
-    let url = `${process.env.REACT_APP_API_ENDPOINT}/profile`
+    let url = `${apiPath}/profile`
+    console.log(url)
     axios.get(url).then(profileList => {
       let source = []
       let data = []
@@ -236,7 +235,7 @@ const Email = ({ match }) => {
               >
                 {source.map(ele => {
                   return (
-                    <Option key={ele} value={ele}>{ele}</Option>
+                    <Option value={ele}>{ele}</Option>
                   )
                 })}
               </Select>
@@ -252,12 +251,20 @@ const Email = ({ match }) => {
         }
       })
       console.log(data)
-      setScanSetting({ ...scanSetting, profile: source })
-      setScanDataSource({ "profile": source[0] })
+      dispatch(profileUpdate(source))
+      dispatch(scanSetSaving({ "profile": source[0] }))
 
     }).catch(err => {
-      console.log(err.response.status)
-      sendMessage(err.response.status)
+      console.log(err)
+      if (err.response.status === 401) {
+        message.error("Login timeout expired", 3)
+        setTimeout(() => {
+          dispatch(logOut());
+        }, 3000)
+      } else {
+        console.log(err);
+        message.error("Error", 3)
+      }
     })
 
 
@@ -265,61 +272,55 @@ const Email = ({ match }) => {
   }, [])
 
 
-  useEffect(() => {
-    if (history.location.state != null) {
-      setTable(history.location.state)
-    }
-  }, [history])
-
   const saveSetting = (e) => {
     console.log(e.target.id)
     console.log(e.target.value)
 
     let dic = {}
     dic[e.target.id] = e.target.value
-    setScanDataSource({ ...scanDataSource, ...dic })
+    dispatch(scanSetSaving(dic))
 
   }
 
   const SettingList = () => {
     let profileId = scanSetting[`profile`][0]
+    console.log(scanDataSource)
+
     if (scanDataSource.profile != null) {
       profileId = scanDataSource.profile
     }
-
     return (
       <>
 
         {
           Object.keys(scanSetting).map((u, i) => {
-            console.log(u)
-
             if (u == "profile") {
               console.log(scanSetting[u])
               let str = u.replace(/^./, u[0].toUpperCase())
               return (
+                <Col key={`${u.name}-${i}`} sm={12} xs={24}>
+                  <Form.Item
+                    key={u}
+                    label={str}
+                    name={u}>
+                    <Select
+                      id={u}
+                      placeholder={profileId}
+                      defaultValue={profileId}
+                      onChange={(value) => {
+                        dispatch(scanSetSaving({ 'profile': value }))
 
-                <Form.Item
-                  key={u}
-                  label={str}
-                  name={u}>
-                  <Select
-                    id={u}
-                    placeholder={profileId}
-                    defaultValue={profileId}
-                    onChange={(value) => {
-                      console.log(u, value)
-                      setScanDataSource({ ...scanDataSource, profile: value })
-                    }}
-                  >
-                    {scanSetting[u].map(num => {
-                      return (
-                        <Option key={num} value={num}>{num}</Option>
-                      )
-                    })}
+                      }}
+                    >
+                      {scanSetting[u].map(num => {
+                        return (
+                          <Option value={num}>{num}</Option>
+                        )
+                      })}
 
-                  </Select>
-                </Form.Item>
+                    </Select>
+                  </Form.Item>
+                </Col>
               )
             }
 
@@ -327,17 +328,19 @@ const Email = ({ match }) => {
               let str = u.replace(/^./, u[0].toUpperCase())
 
               return (
-
-                <Form.Item
-                  key={u}
-                  label={str + ": "}
-                  name={u}>
-                  <Input
-                    id={u}
-                    onPressEnter={saveSetting}
-                    placeholder={scanSetting[u]} />
-                </Form.Item>
-
+                <Col key={`${u.name}-${i}`} sm={12} xs={24}>
+                  <Form.Item
+                    key={u}
+                    label={str}
+                    name={u}>
+                    <Input
+                      id={u}
+                      defaultValue={scanDataSource[u]}
+                      placeholder={scanDataSource[u]}
+                      onPressEnter={saveSetting}
+                    />
+                  </Form.Item>
+                </Col>
               )
 
             }
@@ -346,32 +349,26 @@ const Email = ({ match }) => {
       </>)
   }
 
-  const sendMessage = (code) => {
-
-    ERR.map(id => {
-      if (id.code == code && id == 401) {
-        message.warning(id.response);
-        // history.replace('http://localhost:3000/admin')
-      }
-    })
-
-  }
-
-
   return (
 
     <>
       <PageHeader
         ghost
         title={`Scan`}
+        buttons={[
+          <div key="1" className="page-header-actions">
+            <Button className="btn-add_new" size="default" type="primary" onClick={toggleMailComposer}>
+              + Upload
+            </Button>
+          </div>
+        ]}
       />
-
       <Modal
         type={`primary`}
+        centered
         footer={null}
         visible={isMailEditorOpen.editor}
         onCancel={closeMailComposr}
-        style={{ height: "500px" }}
       >
         <Spin spinning={isMailEditorOpen.loading}>
           <Tabs defaultActiveKey="1">
@@ -489,7 +486,9 @@ const Email = ({ match }) => {
             </TabPane>
             <TabPane tab="Setting" key="3">
               <Form name="info" layout="vertical" >
-                <SettingList />
+                <Row gutter={16}>
+                  <SettingList />
+                </Row>
               </Form>
             </TabPane>
           </Tabs>
@@ -497,26 +496,13 @@ const Email = ({ match }) => {
       </Modal >
 
       <Main>
-        <Button
-          style={{
-            marginBottom: "15px",
-            width: "auto"
-          }}
-          onClick={toggleMailComposer}
-          transparented
-          type="primary"
-          size="default"
-          block>
-          <FeatherIcon icon="plus" size={18} />Upload
-        </Button>
-
         {tableInfo == '' ?
           <></> :
           <>
             <Row gutter={25}>
               {
                 tableInfo.response.map((res, id) => {
-                  console.log(pageinfo)
+                  console.log(res)
                   let startIdx = (pageinfo.current - 1) * pageinfo.pageSize
                   let endIdx = startIdx + pageinfo.pageSize
                   if (id >= startIdx && id < endIdx)
@@ -530,7 +516,14 @@ const Email = ({ match }) => {
                           }
                         >
                           <GalleryCard style={{ marginBottom: '25px' }}>
-                            <NavLink to={{ pathname: "/admin/main/chat/private", state: { data: tableInfo.response, index: id } }} >
+                            <NavLink to={{
+                              pathname: "/admin/detail/result",
+                              state: {
+                                from: 'scan',
+                                data: tableInfo.response,
+                                index: id
+                              }
+                            }} >
                               <figure>
                                 <div style={{
                                   height: "250px",
@@ -551,15 +544,15 @@ const Email = ({ match }) => {
                                     <div>
                                       <p>
                                         Decision:
-                                        <span style={{ color: '#000' }}>{res.decision}</span>
+                                        <span style={{ color: '#000' }}>{res.result.decision}</span>
                                         &emsp;
-                                        Status:
-                                        <span style={{ color: '#000' }}>{res.data.countryFull[0].value}</span>
+                                        State:
+                                        <span style={{ color: '#000' }}>{res.result.data.countryFull !== undefined ? res.result.data.countryFull[0].value : 'Unknown'}</span>
                                         &emsp;
                                       </p>
                                       <p>Transaction ID: </p>
                                       <span>
-                                        {res.transactionId}
+                                        {res.result.transactionId}
                                         <p style={{ textAlign: "right" }}>{res.scanTime}</p>
                                       </span>
                                     </div>
@@ -576,24 +569,21 @@ const Email = ({ match }) => {
             </Row>
             <Row>
               {tableInfo.response.length > 2 ?
-                <Col  >
+                <Col className="pb-30" >
                   <Pagination
                     onChange={changePage}
                     pageSize={pageinfo.pageSize}
                     total={tableInfo.response.length}
                   >
-
                   </Pagination>
                 </Col>
                 :
                 <></>
-
               }
-
             </Row>
           </>
-        }
 
+        }
       </Main>
     </>
   );
