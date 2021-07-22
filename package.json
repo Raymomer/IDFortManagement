@@ -61,7 +61,7 @@
     "simple-react-lightbox": "^3.3.4-1",
     "styled-components": "^4.4.1",
     "swiper": "^6.4.10",
-    "xlsx": "^0.16.9"
+    "xlsx": "^0.17.0"
   },
   "homepage": "/",
   "scripts": {
